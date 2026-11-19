@@ -28,6 +28,8 @@
   .termo table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0;display:block;overflow-x:auto}
   .termo th,.termo td{border:1px solid #c9ced3;padding:6px;text-align:left;white-space:nowrap}
   .termo th{background:#f0f2f4}
+  .termo tbody th{width:38%;white-space:normal}
+  .termo tbody td{white-space:normal}
   .termo .pend{font-size:13px}
   label{display:block;margin:12px 0 4px;font-size:14px}
   .check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
@@ -44,7 +46,7 @@
 </style>
 </head>
 <body>
-<header><img src="logo.png" alt="Kempinski Laje de Pedra" onerror="this.remove()"><span>TERMO DE UNIFORMES</span></header>
+<header><img src="logo.png" alt="Kempinski Laje de Pedra" onerror="this.remove()"><span>TERMO DE RESPONSABILIDADE</span></header>
 <main id="app"><p class="carregando">Carregando o termo…</p></main>
 
 <script>
@@ -91,8 +93,12 @@ var API = 'https://script.google.com/macros/s/AKfycbyOINt-U5n527uzA2GH4pCQgatsuD
       ' · ' + esc(d.quando) + ' (horário de Brasília)<br>Código de verificação (SHA-256): ' + esc(d.hash) + '</div>';
 
     if (d.estado === 'pendente') {
-      var frase = d.tipo === 'ENTREGA' ? 'Li o termo, recebi os uniformes listados e concordo com as condições.'
-        : 'Li o termo e confirmo a devolução dos uniformes no estado indicado.';
+      var frase = {
+        ENTREGA: 'Li o termo, recebi os uniformes listados e concordo com as condições.',
+        DEVOLUCAO: 'Li o termo e confirmo a devolução dos uniformes no estado indicado.',
+        EQUIP_ENTREGA: 'Li o termo, recebi o equipamento descrito e concordo com as condições.',
+        EQUIP_DEVOLUCAO: 'Li o termo e confirmo a devolução do equipamento no estado indicado.'
+      }[d.tipo] || 'Li o termo e concordo com as condições.';
       h += '<section class="card" id="acao">' +
         (erroAcao ? '<div class="card er" style="margin:0 0 8px">' + esc(erroAcao) + '</div>' : '') +
         '<label class="check"><input type="checkbox" id="li"><span>' + frase + '</span></label>' +
