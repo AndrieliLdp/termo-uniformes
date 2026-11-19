@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Estoque">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Estoque · Kempinski Laje de Pedra</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root{--az:#010f2a;--az2:#1d2b4f;--bege:#a49483;--fundo:#f3f5f7;--card:#fff;--txt:#1b1f23;--sub:#5f6b76;--borda:#d9dee3;
+        --ok:#1e7a46;--okf:#e3f4ea;--av:#9a6700;--avf:#fff4d6;--er:#b42318;--erf:#fde8e7}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--txt)}
+  header{background:#fff;color:var(--az);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--bege)}
+  header b{font-size:15px;letter-spacing:.18em;font-weight:600}
+  header button{background:none;border:1px solid var(--az);color:var(--az);border-radius:8px;padding:4px 10px;font-size:13px}
+  nav{display:flex;background:#fff;border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:4}
+  nav button{flex:1;border:0;background:none;padding:12px 4px;font-size:14px;color:var(--sub);border-bottom:3px solid transparent}
+  nav button.on{color:var(--az);border-bottom-color:var(--az);font-weight:600}
+  main{max-width:640px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:14px;margin-bottom:12px}
+  h2{font-size:16px;margin:0 0 10px}
+  label{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
+  input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid var(--borda);border-radius:8px;background:#fff;color:var(--txt)}
+  textarea{min-height:60px}
+  button.pri,a.pri{display:block;width:100%;text-align:center;background:var(--az);color:#fff;border:0;border-radius:10px;padding:13px;font-size:15px;font-weight:600;text-decoration:none;margin-top:12px}
+  button.sec,a.sec{display:block;width:100%;text-align:center;background:#fff;color:var(--az);border:1px solid var(--az);border-radius:10px;padding:11px;font-size:14px;text-decoration:none;margin-top:8px}
+  a.wa{background:#1f8a4c}
+  button:disabled{opacity:.5}
+  .peq{font-size:13px;color:var(--sub)}
+  .chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:#eef1f4;color:var(--sub);margin-left:4px}
+  .chip.PENDENTE{background:var(--avf);color:var(--av)} .chip.ACEITO{background:var(--okf);color:var(--ok)}
+  .chip.CONTESTADO{background:var(--erf);color:var(--er)} .chip.CANCELADO{text-decoration:line-through}
+  .msg{padding:10px 12px;border-radius:8px;margin:10px 0;font-size:14px}
+  .msg.er{background:var(--erf);color:var(--er)} .msg.ok{background:var(--okf);color:var(--ok)} .msg.av{background:var(--avf);color:var(--av)}
+  .busca-res button{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--borda);border-radius:8px;padding:10px;margin-top:6px;font-size:14px}
+  .escolhido{display:flex;justify-content:space-between;align-items:center;background:#eef4f8;border-radius:8px;padding:10px}
+  .escolhido button{background:none;border:0;color:var(--az);font-size:13px;text-decoration:underline}
+  .linha{border:1px solid var(--borda);border-radius:10px;padding:10px;margin-top:8px}
+  .linha2{display:grid;grid-template-columns:1fr 80px 44px;gap:6px;margin-top:6px}
+  .x{background:#fff;border:1px solid var(--borda);border-radius:8px;font-size:16px;color:var(--er)}
+  .alerta{color:var(--er);font-size:12px;margin-top:4px}
+  .dev-item{border:1px solid var(--borda);border-radius:10px;padding:10px;margin-top:8px}
+  .estados{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+  .estados label{margin:0;font-size:11px;text-align:center}
+  .estados input{text-align:center;padding:8px 4px}
+  .est-lin{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eef1f4}
+  .est-lin:last-child{border:0}
+  .est-lin .q{font-weight:700;font-size:16px} .est-lin.baixo .q{color:var(--er)}
+  .mov{border-bottom:1px solid #eef1f4;padding:10px 0} .mov:last-child{border:0}
+  .mov .acoes{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+  .mov .acoes a,.mov .acoes button{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid var(--borda);background:#fff;color:var(--az);text-decoration:none}
+  .vazio{color:var(--sub);font-size:14px;text-align:center;padding:12px}
+  .linkbox{font-size:12px;word-break:break-all;background:#f6f8fa;padding:8px;border-radius:8px;margin-top:8px}
+  #carregando{position:fixed;inset:0;background:#ffffffaa;display:none;align-items:center;justify-content:center;z-index:9;font-weight:600;color:var(--az)}
+  .oculto{display:none!important}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  header{padding-top:calc(8px + env(safe-area-inset-top))}
+  header .marca{display:flex;align-items:center;gap:10px}
+  header .marca img{height:46px;width:auto}
+  .logo-login{display:block;max-width:200px;width:60%;margin:0 auto 14px}
+  .titulo-login{text-align:center;letter-spacing:.25em;font-weight:600;color:var(--az);margin:0 0 14px}
+</style>
+</head>
+<body>
+<div id="carregando">Aguarde…</div>
+
+<!-- LOGIN -->
+<section id="tela-login" class="oculto">
+  <main style="padding-top:12vh">
+    <div class="card">
+      <img class="logo-login" src="../logo.png" alt="Kempinski Laje de Pedra">
+      <h2 class="titulo-login">ESTOQUE</h2>
+      <p class="peq">Digite seu PIN para entrar.</p>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN">
+      <div id="login-msg"></div>
+      <button class="pri" id="btn-login">Entrar</button>
+    </div>
+  </main>
+</section>
+
+<!-- APP -->
+<section id="tela-app" class="oculto">
+  <header><span class="marca"><img src="../logo.png" alt="Kempinski Laje de Pedra"><b>ESTOQUE</b></span><span><span id="usuario" class="peq" style="margin-right:8px"></span><button id="btn-sair">Sair</button></span></header>
+  <nav>
+    <button data-aba="entregar" class="on">Entregar</button>
+    <button data-aba="devolver">Devolver</button>
+    <button data-aba="estoque">Estoque</button>
+    <button data-aba="historico">Histórico</button>
+  </nav>
+  <main>
+    <!-- ENTREGAR -->
+    <div id="aba-entregar">
+      <div id="ent-form">
+        <div class="card">
+          <h2>Quem vai receber?</h2>
+          <div id="ent-colab"></div>
+          <button class="sec" id="btn-novo-colab">+ Cadastrar colaborador</button>
+        </div>
+        <div class="card" id="ent-itens-card">
+          <h2>Itens</h2>
+          <button class="sec oculto" id="btn-kit"></button>
+          <div id="ent-linhas"></div>
+          <button class="sec" id="btn-add-linha">+ Adicionar item</button>
+          <label>Observação (opcional)</label>
+          <textarea id="ent-obs"></textarea>
+          <div id="ent-msg"></div>
+          <button class="pri" id="btn-entregar">Gerar termo de entrega</button>
+        </div>
+      </div>
+      <div id="ent-res"></div>
+    </div>
+
+    <!-- NOVO COLABORADOR -->
+    <div id="aba-colab" class="oculto">
+      <div class="card">
+        <h2>Cadastrar colaborador</h2>
+        <label>Nome completo</label><input id="c-nome" autocomplete="off">
+        <label>CPF</label><input id="c-cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14">
+        <div class="row2">
+          <div><label>Vínculo</label><select id="c-vinculo"><option value="">—</option><option>CLT</option><option>PJ</option></select></div>
+          <div><label>Setor</label><input id="c-setor" list="dl-setores" autocomplete="off"></div>
+        </div>
+        <label>Função</label><input id="c-funcao" list="dl-funcoes" autocomplete="off">
+        <label>Celular (WhatsApp)</label><input id="c-cel" inputmode="tel" placeholder="(54) 99999-9999">
+        <label>E-mail (opcional, recebe cópia do termo)</label><input id="c-email" type="email" autocomplete="off">
+        <datalist id="dl-funcoes"></datalist><datalist id="dl-setores"></datalist>
+        <div id="c-msg"></div>
+        <button class="pri" id="btn-salvar-colab">Salvar</button>
+        <button class="sec" id="btn-cancelar-colab">Voltar</button>
+      </div>
+    </div>
+
+    <!-- DEVOLVER -->
+    <div id="aba-devolver" class="oculto">
+      <div id="dev-form">
+        <div class="card">
+          <h2>Quem está devolvendo?</h2>
+          <div id="dev-colab"></div>
+        </div>
+        <div class="card oculto" id="dev-itens-card">
+          <h2>Itens com a pessoa</h2>
+          <p class="peq">Informe quantos de cada item voltaram em cada estado. "Bom" volta para o estoque; os demais são baixados.</p>
+          <button class="sec" id="btn-tudo-bom">Marcar tudo como Bom</button>
+          <div id="dev-linhas"></div>
+          <label>Observação (opcional)</label>
+          <textarea id="dev-obs"></textarea>
+          <div id="dev-msg"></div>
+          <button class="pri" id="btn-devolver">Gerar termo de devolução</button>
+        </div>
+      </div>
+      <div id="dev-res"></div>
+    </div>
+
+    <!-- ESTOQUE -->
+    <div id="aba-estoque" class="oculto">
+      <div class="card">
+        <h2>Entrada de estoque</h2>
+        <p class="peq">Use para compras e também para a contagem inicial. Se o item ainda não existir, ele é cadastrado.</p>
+        <label>Item (descrição)</label><input id="e-desc" list="dl-descs" autocomplete="off" placeholder="Ex.: Camisa polo camareira">
+        <div class="row2">
+          <div><label>Tamanho</label><input id="e-tam" list="dl-tams" autocomplete="off" placeholder="P, M, G, 40, U…"></div>
+          <div><label>Quantidade</label><input id="e-qtd" type="number" min="1" inputmode="numeric"></div>
+        </div>
+        <div class="row2">
+          <div><label>Custo unitário R$ (opcional)</label><input id="e-custo" inputmode="decimal" placeholder="0,00"></div>
+          <div><label>Estoque mínimo (opcional)</label><input id="e-min" type="number" min="0" inputmode="numeric"></div>
+        </div>
+        <datalist id="dl-descs"></datalist><datalist id="dl-tams"></datalist>
+        <div id="e-msg"></div>
+        <button class="pri" id="btn-entrada">Registrar entrada</button>
+      </div>
+      <div class="card">
+        <h2>Estoque atual</h2>
+        <input id="e-busca" placeholder="Buscar item…">
+        <div id="e-lista"></div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="aba-historico" class="oculto">
+      <div class="card">
+        <label style="display:flex;gap:8px;align-items:center;margin:0 0 8px;color:var(--txt)"><input type="checkbox" id="h-pend" style="width:auto" checked> Só pendentes e contestados</label>
+        <div id="h-lista"></div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<script>
+const S = { sessao: null, nome: '', base: null, ent: { colab: null, linhas: [] }, dev: { colab: null, saldo: [], q: {} } };
+const ESTADOS = [['bom','Bom'],['desgastado','Desgast.'],['danificado','Danif.'],['nao','Não dev.']];
+const $ = (s) => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+const fmtCPF = c => String(c).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+const limpa = e => String((e && e.message) || e).replace(/^(Exception|Error|Erro|ScriptError):\s*/i, '');
+const msg = (el, tipo, t) => { $(el).innerHTML = t ? `<div class="msg ${tipo}">${esc(t)}</div>` : ''; };
+const loading = on => $('#carregando').style.display = on ? 'flex' : 'none';
+const guardar = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const lerLS = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+
+const API = 'https://script.google.com/macros/s/AKfycbyOINt-U5n527uzA2GH4pCQgatsuD0qeLvlyWRM85urpuTLbSuRiXWTkAXlTrFrM9LA/exec';
+async function gs(fn, ...args) {
+  const corpo = fn === 'login' ? { fn, pin: args[0] } : { fn, sessao: args[0], acao: args[1], dados: args[2] };
+  let r;
+  try {
+    r = await fetch(API, { method: 'POST', body: JSON.stringify(corpo), headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                           credentials: 'omit', redirect: 'follow', cache: 'no-store' });
+  } catch (e) { throw new Error('Sem conexão com o servidor. Verifique a internet.'); }
+  const d = await r.json();
+  if (!d.ok) throw new Error(d.erro || 'Erro no servidor.');
+  return d.data;
+}
+async function api(acao, dados) {
+  loading(true);
+  try { return await gs('api', S.sessao, acao, dados || {}); }
+  catch (e) {
+    const m = limpa(e);
+    if (m.includes('SESSAO_EXPIRADA')) { sair('Sua sessão expirou. Entre de novo.'); throw new Error('Sessão expirada.'); }
+    throw new Error(m);
+  } finally { loading(false); }
+}
+
+// ---------- login ----------
+async function entrar() {
+  const pin = $('#pin').value.trim();
+  if (!pin) return;
+  loading(true);
+  try {
+    const r = await gs('login', pin);
+    S.sessao = r.sessao; S.nome = r.nome; guardar('uni_sessao', r);
+    $('#pin').value = ''; msg('#login-msg');
+    await iniciar();
+  } catch (e) { msg('#login-msg', 'er', limpa(e)); }
+  finally { loading(false); }
+}
+function sair(aviso) {
+  S.sessao = null; guardar('uni_sessao', null);
+  $('#tela-app').classList.add('oculto'); $('#tela-login').classList.remove('oculto');
+  msg('#login-msg', aviso ? 'av' : '', aviso || '');
+}
+async function iniciar() {
+  S.base = await api('base');
+  $('#usuario').textContent = S.nome;
+  $('#tela-login').classList.add('oculto'); $('#tela-app').classList.remove('oculto');
+  montarListas(); renderEntregar(); renderEstoque();
+}
+async function recarregarBase() { S.base = await api('base'); montarListas(); }
+
+// ---------- navegação ----------
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => abrirAba(b.dataset.aba));
+function abrirAba(a) {
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.aba === a));
+  ['entregar','devolver','estoque','historico','colab'].forEach(x => $('#aba-' + x).classList.toggle('oculto', x !== a));
+  if (a === 'historico') carregarHistorico();
+  if (a === 'estoque') renderEstoque();
+  window.scrollTo(0, 0);
+}
+
+// ---------- seletor de colaborador ----------
+function seletorColab(box, escolhido, onPick, onClear) {
+  const el = $(box);
+  if (escolhido) {
+    el.innerHTML = `<div class="escolhido"><div><b>${esc(escolhido.nome)}</b><br><span class="peq">${esc(escolhido.funcao)} · ${esc(escolhido.vinculo)} · CPF ${fmtCPF(escolhido.cpf)}</span>
+      ${escolhido.status === 'Desligado' ? '<br><span class="peq" style="color:var(--er)">Desligado</span>' : ''}</div><button>trocar</button></div>`;
+    el.querySelector('button').onclick = onClear;
+    return;
+  }
+  el.innerHTML = `<input placeholder="Digite nome ou CPF…" autocomplete="off"><div class="busca-res"></div>`;
+  const inp = el.querySelector('input'), res = el.querySelector('.busca-res');
+  inp.oninput = () => {
+    const q = norm(inp.value), d = inp.value.replace(/\D/g, '');
+    if (q.length < 2) { res.innerHTML = ''; return; }
+    const achados = S.base.colabs.filter(c => norm(c.nome).includes(q) || (d.length >= 3 && c.cpf.includes(d))).slice(0, 8);
+    res.innerHTML = achados.length ? achados.map((c, i) => `<button data-i="${i}"><b>${esc(c.nome)}</b> <span class="peq">${esc(c.funcao)}${c.status === 'Desligado' ? ' · desligado' : ''}</span></button>`).join('')
+      : '<p class="peq">Ninguém encontrado. Cadastre abaixo.</p>';
+    res.querySelectorAll('button').forEach(b => b.onclick = () => onPick(achados[b.dataset.i]));
+  };
+  inp.focus();
+}
+
+// ---------- ENTREGAR ----------
+function itensAtivos() { return S.base.itens.filter(i => i.ativo); }
+function descs() { return [...new Set(itensAtivos().map(i => i.desc))].sort((a, b) => a.localeCompare(b, 'pt-BR')); }
+function tamsDe(desc) { return itensAtivos().filter(i => i.desc === desc); }
+function acharItem(desc, tam) { return itensAtivos().find(i => i.desc === desc && i.tam === tam); }
+
+function renderEntregar() {
+  seletorColab('#ent-colab', S.ent.colab, c => {
+    S.ent.colab = c;
+    if (!S.ent.linhas.length || S.ent.linhas.every(l => !l.desc)) S.ent.linhas = [];
+    renderEntregar();
+  }, () => { S.ent.colab = null; renderEntregar(); });
+  const kit = S.ent.colab && S.base.kits[norm(S.ent.colab.funcao)];
+  const bk = $('#btn-kit');
+  if (kit && kit.length) { bk.textContent = `Usar kit da função ${S.ent.colab.funcao} (${kit.length} itens)`; bk.classList.remove('oculto'); }
+  else bk.classList.add('oculto');
+  if (!S.ent.linhas.length) S.ent.linhas = [{ desc: '', tam: '', qtd: 1 }];
+  renderLinhasEnt();
+}
+function renderLinhasEnt() {
+  const ds = descs();
+  if (!ds.length) { $('#ent-linhas').innerHTML = '<p class="vazio">Nenhum item cadastrado ainda. Registre o estoque na aba Estoque.</p>'; return; }
+  $('#ent-linhas').innerHTML = S.ent.linhas.map((l, i) => {
+    const tams = tamsDe(l.desc), it = acharItem(l.desc, l.tam);
+    return `<div class="linha" data-i="${i}">
+      <select class="f-desc"><option value="">Escolha o item…</option>${ds.map(d => `<option value="${esc(d)}" ${d === l.desc ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
+      <div class="linha2">
+        <select class="f-tam"><option value="">Tamanho</option>${tams.map(t => `<option value="${esc(t.tam)}" ${t.tam === l.tam ? 'selected' : ''}>${esc(t.tam)} — estoque ${t.estoque}</option>`).join('')}</select>
+        <input class="f-qtd" type="number" min="1" inputmode="numeric" value="${l.qtd}">
+        <button class="x" aria-label="Remover">✕</button>
+      </div>
+      ${it && it.estoque < l.qtd ? `<div class="alerta">Só há ${it.estoque} em estoque</div>` : ''}
+      ${l.kitSemItem ? `<div class="alerta">Item do kit "${esc(l.kitSemItem)}" não encontrado no estoque</div>` : ''}
+    </div>`;
+  }).join('');
+}
+$('#ent-linhas').addEventListener('change', e => {
+  const box = e.target.closest('.linha'); if (!box) return;
+  const l = S.ent.linhas[box.dataset.i];
+  if (e.target.classList.contains('f-desc')) {
+    l.desc = e.target.value; l.kitSemItem = ''; const t = tamsDe(l.desc); l.tam = t.length === 1 ? t[0].tam : '';
+  }
+  if (e.target.classList.contains('f-tam')) l.tam = e.target.value;
+  if (e.target.classList.contains('f-qtd')) l.qtd = Math.max(1, parseInt(e.target.value) || 1);
+  renderLinhasEnt();
+});
+$('#ent-linhas').addEventListener('click', e => {
+  if (!e.target.classList.contains('x')) return;
+  S.ent.linhas.splice(e.target.closest('.linha').dataset.i, 1);
+  if (!S.ent.linhas.length) S.ent.linhas.push({ desc: '', tam: '', qtd: 1 });
+  renderLinhasEnt();
+});
+$('#btn-add-linha').onclick = () => { S.ent.linhas.push({ desc: '', tam: '', qtd: 1 }); renderLinhasEnt(); };
+$('#btn-kit').onclick = () => {
+  const kit = S.base.kits[norm(S.ent.colab.funcao)] || [];
+  S.ent.linhas = kit.map(k => {
+    const d = descs().find(x => norm(x) === norm(k.desc));
+    const t = d ? tamsDe(d) : [];
+    return { desc: d || '', tam: t.length === 1 ? t[0].tam : '', qtd: k.qtd, kitSemItem: d ? '' : k.desc };
+  });
+  renderLinhasEnt();
+};
+$('#btn-entregar').onclick = async () => {
+  msg('#ent-msg');
+  if (!S.ent.colab) return msg('#ent-msg', 'er', 'Escolha o colaborador.');
+  const itens = [];
+  for (const l of S.ent.linhas) {
+    if (!l.desc && !l.tam) continue;
+    const it = acharItem(l.desc, l.tam);
+    if (!it) return msg('#ent-msg', 'er', `Escolha o tamanho de "${l.desc || 'item'}".`);
+    itens.push({ cod: it.cod, qtd: l.qtd });
+  }
+  if (!itens.length) return msg('#ent-msg', 'er', 'Inclua pelo menos um item.');
+  try {
+    const r = await api('entrega', { cpf: S.ent.colab.cpf, itens, obs: $('#ent-obs').value });
+    mostrarResultado('#ent-res', '#ent-form', r, 'entrega', () => { S.ent = { colab: null, linhas: [] }; $('#ent-obs').value = ''; renderEntregar(); });
+    recarregarBase();
+  } catch (e) { msg('#ent-msg', 'er', e.message); }
+};
+
+function mostrarResultado(resBox, formBox, r, tipo, reset) {
+  $(formBox).classList.add('oculto');
+  $(resBox).innerHTML = `<div class="card">
+    <div class="msg ok">Termo <b>${esc(r.id)}</b> gerado para ${esc(r.nome)}.</div>
+    <p class="peq">Envie o link para a pessoa dar o de acordo. Também dá para abrir aqui e entregar o celular para ela confirmar na hora.</p>
+    <a class="pri wa" href="${esc(r.whatsapp)}" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+    <a class="sec" href="${esc(r.link)}" target="_blank" rel="noopener">Abrir termo neste aparelho</a>
+    <button class="sec" id="btn-copiar">Copiar link</button>
+    <div class="linkbox" id="link-txt">${esc(r.link)}</div>
+    <button class="pri" id="btn-nova">Nova ${tipo}</button></div>`;
+  $('#btn-copiar').onclick = () => copiar(r.link, $('#btn-copiar'));
+  $('#btn-nova').onclick = () => { $(resBox).innerHTML = ''; $(formBox).classList.remove('oculto'); reset(); };
+  window.scrollTo(0, 0);
+}
+function copiar(txt, btn) {
+  const fim = () => { const o = btn.textContent; btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = o, 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(fim, () => copiarVelho(txt, fim)); else copiarVelho(txt, fim);
+}
+function copiarVelho(txt, fim) {
+  const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select();
+  try { document.execCommand('copy'); fim(); } catch (e) { prompt('Copie o link:', txt); } t.remove();
+}
+
+// ---------- NOVO COLABORADOR ----------
+$('#btn-novo-colab').onclick = () => {
+  ['nome','cpf','setor','funcao','cel','email'].forEach(k => $('#c-' + k).value = '');
+  $('#c-vinculo').value = ''; msg('#c-msg'); abrirAba('colab');
+};
+$('#btn-cancelar-colab').onclick = () => abrirAba('entregar');
+$('#c-cpf').oninput = e => {
+  let d = e.target.value.replace(/\D/g, '').slice(0, 11);
+  e.target.value = d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+};
+$('#btn-salvar-colab').onclick = async () => {
+  msg('#c-msg');
+  const d = { nome: $('#c-nome').value, cpf: $('#c-cpf').value, vinculo: $('#c-vinculo').value, setor: $('#c-setor').value,
+              funcao: $('#c-funcao').value, celular: $('#c-cel').value, email: $('#c-email').value };
+  try {
+    const c = await api('colaborador', d);
+    await recarregarBase();
+    S.ent.colab = S.base.colabs.find(x => x.cpf === c.cpf) || c;
+    abrirAba('entregar'); renderEntregar();
+  } catch (e) { msg('#c-msg', 'er', e.message); }
+};
+
+// ---------- DEVOLVER ----------
+function renderDevolver() {
+  seletorColab('#dev-colab', S.dev.colab, async c => {
+    S.dev.colab = c; S.dev.q = {};
+    try { S.dev.saldo = await api('saldo', { cpf: c.cpf }); } catch (e) { S.dev.saldo = []; msg('#dev-msg', 'er', e.message); }
+    renderDevolver();
+  }, () => { S.dev = { colab: null, saldo: [], q: {} }; renderDevolver(); });
+  const card = $('#dev-itens-card');
+  if (!S.dev.colab) { card.classList.add('oculto'); return; }
+  card.classList.remove('oculto');
+  if (!S.dev.saldo.length) {
+    $('#dev-linhas').innerHTML = '<p class="vazio">Esta pessoa não tem uniformes registrados.</p>';
+    $('#btn-tudo-bom').classList.add('oculto'); $('#btn-devolver').classList.add('oculto'); return;
+  }
+  $('#btn-tudo-bom').classList.remove('oculto'); $('#btn-devolver').classList.remove('oculto');
+  $('#dev-linhas').innerHTML = S.dev.saldo.map(s => {
+    const q = S.dev.q[s.cod] || {};
+    return `<div class="dev-item"><b>${esc(s.desc)}</b> · ${esc(s.tam)} <span class="chip">com a pessoa: ${s.qtd}</span>
+      <div class="estados">${ESTADOS.map(([k, r]) => `<label>${r}<input type="number" min="0" max="${s.qtd}" inputmode="numeric" data-cod="${esc(s.cod)}" data-k="${k}" value="${q[k] || ''}"></label>`).join('')}</div></div>`;
+  }).join('');
+}
+$('#dev-linhas').addEventListener('input', e => {
+  const { cod, k } = e.target.dataset; if (!cod) return;
+  (S.dev.q[cod] = S.dev.q[cod] || {})[k] = Math.max(0, parseInt(e.target.value) || 0);
+});
+$('#btn-tudo-bom').onclick = () => { S.dev.saldo.forEach(s => S.dev.q[s.cod] = { bom: s.qtd }); renderDevolver(); };
+$('#btn-devolver').onclick = async () => {
+  msg('#dev-msg');
+  const itens = Object.keys(S.dev.q).map(cod => Object.assign({ cod }, S.dev.q[cod]))
+    .filter(x => ESTADOS.some(([k]) => x[k] > 0));
+  if (!itens.length) return msg('#dev-msg', 'er', 'Informe a quantidade devolvida de pelo menos um item.');
+  try {
+    const r = await api('devolucao', { cpf: S.dev.colab.cpf, itens, obs: $('#dev-obs').value });
+    mostrarResultado('#dev-res', '#dev-form', r, 'devolução', () => { S.dev = { colab: null, saldo: [], q: {} }; $('#dev-obs').value = ''; renderDevolver(); });
+    recarregarBase();
+  } catch (e) { msg('#dev-msg', 'er', e.message); }
+};
+
+// ---------- ESTOQUE ----------
+function montarListas() {
+  const op = arr => [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR')).map(v => `<option value="${esc(v)}">`).join('');
+  $('#dl-descs').innerHTML = op(S.base.itens.map(i => i.desc));
+  $('#dl-tams').innerHTML = op(S.base.itens.map(i => i.tam).concat(['PP','P','M','G','GG','XG','U']));
+  $('#dl-funcoes').innerHTML = op(S.base.colabs.map(c => c.funcao).concat(Object.keys(S.base.kits)));
+  $('#dl-setores').innerHTML = op(S.base.colabs.map(c => c.setor));
+}
+function renderEstoque() {
+  if (!S.base) return;
+  const q = norm($('#e-busca').value);
+  const lista = S.base.itens.filter(i => i.ativo && (!q || norm(i.desc + ' ' + i.tam).includes(q)))
+    .sort((a, b) => (a.desc + a.tam).localeCompare(b.desc + b.tam, 'pt-BR'));
+  const baixos = S.base.itens.filter(i => i.ativo && i.min != null && i.estoque < i.min).length;
+  $('#e-lista').innerHTML = (baixos ? `<div class="msg av">${baixos} item(ns) abaixo do estoque mínimo.</div>` : '') +
+    (lista.length ? lista.map(i => `<div class="est-lin ${i.min != null && i.estoque < i.min ? 'baixo' : ''}">
+      <div>${esc(i.desc)} <span class="chip">${esc(i.tam)}</span><br><span class="peq">${esc(i.cod)}${i.min != null ? ' · mín. ' + i.min : ''}</span></div>
+      <div class="q">${i.estoque}</div></div>`).join('') : '<p class="vazio">Nenhum item.</p>');
+}
+$('#e-busca').oninput = renderEstoque;
+$('#btn-entrada').onclick = async () => {
+  msg('#e-msg');
+  const d = { desc: $('#e-desc').value, tam: $('#e-tam').value, qtd: $('#e-qtd').value, custo: $('#e-custo').value, min: $('#e-min').value };
+  try {
+    await api('entrada', d);
+    msg('#e-msg', 'ok', `Entrada registrada: +${d.qtd} ${d.desc} (${d.tam.toUpperCase()}).`);
+    ['qtd','custo','min','tam'].forEach(k => $('#e-' + k).value = '');
+    await recarregarBase(); renderEstoque();
+  } catch (e) { msg('#e-msg', 'er', e.message); }
+};
+
+// ---------- HISTÓRICO ----------
+$('#h-pend').onchange = carregarHistorico;
+async function carregarHistorico() {
+  $('#h-lista').innerHTML = '<p class="vazio">Carregando…</p>';
+  let movs;
+  try { movs = await api('movimentos', { pendentes: $('#h-pend').checked }); }
+  catch (e) { $('#h-lista').innerHTML = `<div class="msg er">${esc(e.message)}</div>`; return; }
+  const rot = { ENTREGA: 'Entrega', DEVOLUCAO: 'Devolução', ENTRADA: 'Entrada estoque' };
+  $('#h-lista').innerHTML = movs.length ? movs.map((m, i) => `<div class="mov">
+      <b>${esc(m.id)}</b> <span class="chip">${rot[m.tipo] || esc(m.tipo)}</span> <span class="chip ${esc(m.status)}">${esc(m.status)}</span>
+      <div>${esc(m.nome)}</div><div class="peq">${esc(m.resumo)}</div>
+      <div class="peq">Criado ${esc(m.criado)} por ${esc(m.responsavel)}${m.aceito ? ' · aceito ' + esc(m.aceito) : ''}</div>
+      ${m.motivo ? `<div class="msg er">Contestação: ${esc(m.motivo)}</div>` : ''}
+      <div class="acoes">
+        ${m.status === 'PENDENTE' && m.whatsapp ? `<a href="${esc(m.whatsapp)}" target="_blank" rel="noopener">Reenviar WhatsApp</a><button data-copiar="${i}">Copiar link</button>` : ''}
+        ${(m.status === 'PENDENTE' || m.status === 'CONTESTADO' || (m.tipo === 'ENTRADA' && m.status === 'REGISTRADO')) ? `<button data-cancelar="${esc(m.id)}">Cancelar</button>` : ''}
+      </div></div>`).join('') : '<p class="vazio">Nada por aqui.</p>';
+  $('#h-lista').querySelectorAll('[data-copiar]').forEach(b => b.onclick = () => copiar(movs[b.dataset.copiar].link, b));
+  $('#h-lista').querySelectorAll('[data-cancelar]').forEach(b => b.onclick = async () => {
+    if (!confirm(`Cancelar ${b.dataset.cancelar}? O estoque será ajustado de volta.`)) return;
+    try { await api('cancelar', { id: b.dataset.cancelar }); await recarregarBase(); carregarHistorico(); }
+    catch (e) { alert(e.message); }
+  });
+}
+
+// ---------- início ----------
+$('#btn-login').onclick = entrar;
+$('#pin').onkeydown = e => { if (e.key === 'Enter') entrar(); };
+$('#btn-sair').onclick = () => sair();
+document.querySelector('nav [data-aba="devolver"]').addEventListener('click', renderDevolver);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+(async () => {
+  const s = lerLS('uni_sessao');
+  if (s && s.sessao) {
+    S.sessao = s.sessao; S.nome = s.nome;
+    try { await iniciar(); return; } catch (e) { /* sessão expirada → login */ }
+  }
+  sair();
+})();
+</script>
+</body>
+</html>
