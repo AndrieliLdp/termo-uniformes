@@ -1,6 +1,6 @@
 // Service worker do app Uniformes: guarda só a "casca" do app (página, ícones, logo).
 // Os dados sempre vêm da planilha, nunca do cache.
-const CACHE = 'uniformes-v2';
+const CACHE = 'uniformes-v3';
 const CASCA = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', '../logo.png'];
 
 self.addEventListener('install', e => {

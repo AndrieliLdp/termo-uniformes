@@ -76,6 +76,15 @@
   .resumo{display:flex;gap:8px;margin:10px 0 2px}
   .resumo div{flex:1;background:#f6f8fa;border-radius:8px;padding:8px;text-align:center}
   .resumo b{display:block;font-size:18px;color:var(--az)}
+  .filtros{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+  .filtros button{border:1px solid var(--borda);background:#fff;color:var(--sub);border-radius:99px;padding:6px 12px;font-size:13px}
+  .filtros button.on{border-color:var(--az);background:var(--az);color:#fff}
+  .eq-acoes{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .eq-acoes button{flex:1;min-width:120px;font-size:13px;padding:9px;border-radius:8px;border:1px solid var(--az);background:#fff;color:var(--az)}
+  .eq-acoes button.pri2{background:var(--az);color:#fff}
+  .ficha{font-size:13px;color:var(--sub);margin-top:4px}
+  .chip.Disponível{background:var(--okf);color:var(--ok)} .chip.Em.uso{background:#e8eefc;color:#1d3b8f}
+  .chip.Manutenção{background:var(--avf);color:var(--av)} .chip.Baixado{text-decoration:line-through}
   .logo-login{display:block;max-width:200px;width:60%;margin:0 auto 14px}
   .titulo-login{text-align:center;letter-spacing:.25em;font-weight:600;color:var(--az);margin:0 0 14px}
 </style>
@@ -104,6 +113,7 @@
     <button data-aba="entregar" class="on">Entregar</button>
     <button data-aba="devolver">Devolver</button>
     <button data-aba="estoque">Estoque</button>
+    <button data-aba="equip">Equip.</button>
     <button data-aba="historico">Histórico</button>
   </nav>
   <main>
@@ -195,6 +205,68 @@
       </div>
     </div>
 
+    <!-- EQUIPAMENTOS (notebook etc.) -->
+    <div id="aba-equip" class="oculto">
+      <div id="eq-lista-box" class="card">
+        <h2>Equipamentos</h2>
+        <input id="eq-busca" placeholder="Buscar modelo, patrimônio, série ou pessoa…">
+        <div class="filtros" id="eq-filtros">
+          <button data-f="" class="on">Todos</button><button data-f="Disponível">Disponíveis</button>
+          <button data-f="Em uso">Em uso</button><button data-f="Manutenção">Manutenção</button><button data-f="Baixado">Baixados</button>
+        </div>
+        <button class="sec" id="btn-eq-novo">+ Cadastrar equipamento</button>
+        <div id="eq-lista"></div>
+      </div>
+
+      <div id="eq-form-box" class="card oculto">
+        <h2 id="eq-form-tit">Cadastrar equipamento</h2>
+        <div class="row2">
+          <div><label>Tipo</label><select id="f-tipo"><option>Notebook</option><option>Celular</option><option>Tablet</option><option>Monitor</option><option>Outro</option></select></div>
+          <div><label>Patrimônio / identificação</label><input id="f-pat" autocomplete="off" placeholder="Ex.: NB-001"></div>
+        </div>
+        <div class="row2">
+          <div><label>Marca</label><input id="f-marca" autocomplete="off" placeholder="Dell"></div>
+          <div><label>Modelo</label><input id="f-modelo" autocomplete="off" placeholder="Inspiron 3501"></div>
+        </div>
+        <label>Processador</label><input id="f-proc" autocomplete="off" placeholder="Core i3-1005G1">
+        <div class="row2">
+          <div><label>Memória RAM</label><input id="f-ram" autocomplete="off" placeholder="4 GB"></div>
+          <div><label>Armazenamento</label><input id="f-arm" autocomplete="off" placeholder="256 GB SSD"></div>
+        </div>
+        <label>Nº de série</label><input id="f-serie" autocomplete="off">
+        <label>Acessórios que acompanham</label><input id="f-acess" autocomplete="off" placeholder="Carregador, mouse…">
+        <div class="row2">
+          <div><label>Valor de referência R$</label><input id="f-valor" inputmode="decimal" placeholder="0,00"></div>
+          <div id="f-sit-box"><label>Situação</label><select id="f-situacao"><option>Disponível</option><option>Manutenção</option><option>Baixado</option></select></div>
+        </div>
+        <label>Observação</label><textarea id="f-obs"></textarea>
+        <div id="eq-f-msg"></div>
+        <button class="pri" id="btn-eq-salvar">Salvar</button>
+        <button class="sec" id="btn-eq-voltar1">Voltar</button>
+      </div>
+
+      <div id="eq-acao-box" class="oculto">
+        <div id="eq-acao-form" class="card">
+          <h2 id="eq-acao-tit"></h2>
+          <div id="eq-acao-resumo" class="ficha"></div>
+          <div id="eq-entregar-campos">
+            <label>Para quem?</label>
+            <div id="eq-colab"></div>
+          </div>
+          <div id="eq-devolver-campos">
+            <label>Estado do equipamento na devolução</label>
+            <select id="eq-estado"><option>Bom</option><option>Com avarias</option><option>Danificado</option></select>
+            <label>Acessórios devolvidos</label><input id="eq-acess" autocomplete="off">
+          </div>
+          <label>Observação (opcional)</label><textarea id="eq-obs"></textarea>
+          <div id="eq-acao-msg"></div>
+          <button class="pri" id="btn-eq-confirmar">Gerar termo</button>
+          <button class="sec" id="btn-eq-voltar2">Voltar</button>
+        </div>
+        <div id="eq-res"></div>
+      </div>
+    </div>
+
     <!-- HISTÓRICO -->
     <div id="aba-historico" class="oculto">
       <div class="seg"><button data-h="posse" class="on">Com cada colaborador</button><button data-h="movs">Movimentações</button></div>
@@ -270,14 +342,15 @@ async function iniciar() {
   $('#tela-login').classList.add('oculto'); $('#tela-app').classList.remove('oculto');
   montarListas(); renderEntregar(); renderEstoque();
 }
-async function recarregarBase() { S.base = await api('base'); montarListas(); }
+async function recarregarBase() { S.base = await api('base'); montarListas(); if (!$('#aba-equip').classList.contains('oculto')) renderEquip(); }
 
 // ---------- navegação ----------
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => abrirAba(b.dataset.aba));
 function abrirAba(a) {
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.aba === a));
-  ['entregar','devolver','estoque','historico','colab'].forEach(x => $('#aba-' + x).classList.toggle('oculto', x !== a));
+  ['entregar','devolver','estoque','equip','historico','colab'].forEach(x => $('#aba-' + x).classList.toggle('oculto', x !== a));
   if (a === 'historico') carregarHistorico();
+  if (a === 'equip') voltarEquip();
   if (a === 'estoque') renderEstoque();
   window.scrollTo(0, 0);
 }
@@ -394,8 +467,9 @@ function mostrarResultado(resBox, formBox, r, tipo, reset) {
     <button class="sec" id="btn-copiar">Copiar link</button>
     <div class="linkbox" id="link-txt">${esc(r.link)}</div>
     <button class="pri" id="btn-nova">Nova ${tipo}</button></div>`;
-  $('#btn-copiar').onclick = () => copiar(r.link, $('#btn-copiar'));
-  $('#btn-nova').onclick = () => { $(resBox).innerHTML = ''; $(formBox).classList.remove('oculto'); reset(); };
+  const caixa = $(resBox);
+  caixa.querySelector('#btn-copiar').onclick = () => copiar(r.link, caixa.querySelector('#btn-copiar'));
+  caixa.querySelector('#btn-nova').onclick = () => { caixa.innerHTML = ''; $(formBox).classList.remove('oculto'); reset(); };
   window.scrollTo(0, 0);
 }
 function copiar(txt, btn) {
@@ -498,6 +572,102 @@ $('#btn-entrada').onclick = async () => {
   } catch (e) { msg('#e-msg', 'er', e.message); }
 };
 
+// ---------- EQUIPAMENTOS ----------
+let EQ_FILTRO = '', EQ_SEL = null, EQ_MODO = '', EQ_COLAB = null, EQ_EDIT = false;
+const nomeEq = e => [e.tipo, e.marca, e.modelo].filter(Boolean).join(' ');
+function fichaEq(e) {
+  return [e.pat && 'Patr. ' + e.pat, e.serie && 'Série ' + e.serie, e.proc, e.ram, e.arm, e.acess && 'Acompanha: ' + e.acess]
+    .filter(Boolean).map(esc).join(' · ');
+}
+function voltarEquip() {
+  ['#eq-form-box', '#eq-acao-box'].forEach(x => $(x).classList.add('oculto'));
+  $('#eq-lista-box').classList.remove('oculto');
+  $('#eq-res').innerHTML = ''; $('#eq-acao-form').classList.remove('oculto');
+  renderEquip(); window.scrollTo(0, 0);
+}
+function renderEquip() {
+  if (!S.base) return;
+  const q = norm($('#eq-busca').value);
+  const todos = S.base.equips || [];
+  const lista = todos.filter(e => (!EQ_FILTRO ? e.situacao !== 'Baixado' : e.situacao === EQ_FILTRO) &&
+    (!q || norm([nomeEq(e), e.pat, e.serie, e.comNome].join(' ')).includes(q)));
+  $('#eq-lista').innerHTML = lista.length ? lista.map(e => `<div class="pessoa">
+      <div class="p-top"><div><b>${esc(nomeEq(e))}</b><div class="ficha">${fichaEq(e)}</div></div>
+        <span class="chip ${esc(e.situacao)}">${esc(e.situacao)}</span></div>
+      ${e.situacao === 'Em uso' ? `<div class="peq" style="margin-top:6px">Com <b>${esc(e.comNome)}</b> desde ${esc(e.desde)} · ${esc(e.termo)}</div>` : ''}
+      <div class="eq-acoes">
+        ${e.situacao === 'Disponível' ? `<button class="pri2" data-eq="${esc(e.pat)}" data-m="entregar">Entregar</button>` : ''}
+        ${e.situacao === 'Em uso' ? `<button class="pri2" data-eq="${esc(e.pat)}" data-m="devolver">Registrar devolução</button>` : ''}
+        <button data-eq="${esc(e.pat)}" data-m="editar">Editar</button>
+      </div></div>`).join('')
+    : `<p class="vazio">${todos.length ? 'Nenhum equipamento neste filtro.' : 'Nenhum equipamento cadastrado. Toque em "+ Cadastrar equipamento".'}</p>`;
+  $('#eq-lista').querySelectorAll('[data-eq]').forEach(b => b.onclick = () => {
+    const e = todos.find(x => x.pat === b.dataset.eq);
+    if (b.dataset.m === 'editar') abrirFormEquip(e); else abrirAcaoEquip(e, b.dataset.m);
+  });
+}
+$('#eq-busca').oninput = renderEquip;
+$('#eq-filtros').querySelectorAll('button').forEach(b => b.onclick = () => {
+  EQ_FILTRO = b.dataset.f;
+  $('#eq-filtros').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  renderEquip();
+});
+
+const CAMPOS_EQ = ['tipo', 'pat', 'marca', 'modelo', 'proc', 'ram', 'arm', 'serie', 'acess', 'valor', 'obs'];
+function abrirFormEquip(e) {
+  EQ_EDIT = !!e;
+  $('#eq-form-tit').textContent = e ? 'Editar equipamento' : 'Cadastrar equipamento';
+  CAMPOS_EQ.forEach(k => $('#f-' + k).value = e ? (k === 'valor' ? (e.valor ? String(e.valor).replace('.', ',') : '') : (e[k] || '')) : (k === 'tipo' ? 'Notebook' : k === 'acess' ? 'Carregador' : ''));
+  $('#f-pat').readOnly = !!e;
+  $('#f-sit-box').classList.toggle('oculto', !e || e.situacao === 'Em uso');
+  if (e) $('#f-situacao').value = e.situacao === 'Em uso' ? 'Disponível' : e.situacao;
+  msg('#eq-f-msg');
+  $('#eq-lista-box').classList.add('oculto'); $('#eq-form-box').classList.remove('oculto'); window.scrollTo(0, 0);
+}
+$('#btn-eq-novo').onclick = () => abrirFormEquip(null);
+$('#btn-eq-voltar1').onclick = voltarEquip;
+$('#btn-eq-voltar2').onclick = voltarEquip;
+$('#btn-eq-salvar').onclick = async () => {
+  msg('#eq-f-msg');
+  const d = { novo: !EQ_EDIT };
+  CAMPOS_EQ.forEach(k => d[k] = $('#f-' + k).value);
+  if (EQ_EDIT && !$('#f-sit-box').classList.contains('oculto')) d.situacao = $('#f-situacao').value;
+  try { await api('equip_salvar', d); await recarregarBase(); voltarEquip(); }
+  catch (e) { msg('#eq-f-msg', 'er', e.message); }
+};
+
+function abrirAcaoEquip(e, modo) {
+  EQ_SEL = e; EQ_MODO = modo; EQ_COLAB = null;
+  $('#eq-acao-tit').textContent = modo === 'entregar' ? 'Entregar equipamento' : 'Devolução de equipamento';
+  $('#eq-acao-resumo').innerHTML = `<b style="color:var(--txt)">${esc(nomeEq(e))}</b><br>${fichaEq(e)}` +
+    (modo === 'devolver' ? `<br>Com <b>${esc(e.comNome)}</b> desde ${esc(e.desde)}` : '');
+  $('#eq-entregar-campos').classList.toggle('oculto', modo !== 'entregar');
+  $('#eq-devolver-campos').classList.toggle('oculto', modo !== 'devolver');
+  $('#eq-estado').value = 'Bom'; $('#eq-acess').value = e.acess || ''; $('#eq-obs').value = '';
+  $('#btn-eq-confirmar').textContent = modo === 'entregar' ? 'Gerar termo de entrega' : 'Gerar termo de devolução';
+  msg('#eq-acao-msg'); $('#eq-res').innerHTML = ''; $('#eq-acao-form').classList.remove('oculto');
+  if (modo === 'entregar') renderEqColab();
+  $('#eq-lista-box').classList.add('oculto'); $('#eq-acao-box').classList.remove('oculto'); window.scrollTo(0, 0);
+}
+function renderEqColab() {
+  seletorColab('#eq-colab', EQ_COLAB, c => { EQ_COLAB = c; renderEqColab(); }, () => { EQ_COLAB = null; renderEqColab(); });
+}
+$('#btn-eq-confirmar').onclick = async () => {
+  msg('#eq-acao-msg');
+  try {
+    let r;
+    if (EQ_MODO === 'entregar') {
+      if (!EQ_COLAB) return msg('#eq-acao-msg', 'er', 'Escolha o colaborador.');
+      r = await api('equip_entregar', { pat: EQ_SEL.pat, cpf: EQ_COLAB.cpf, obs: $('#eq-obs').value });
+    } else {
+      r = await api('equip_devolver', { pat: EQ_SEL.pat, estado: $('#eq-estado').value, acessorios: $('#eq-acess').value, obs: $('#eq-obs').value });
+    }
+    mostrarResultado('#eq-res', '#eq-acao-form', r, EQ_MODO === 'entregar' ? 'entrega' : 'devolução', voltarEquip);
+    $('#eq-res').querySelector('#btn-nova').textContent = 'Voltar aos equipamentos';
+    recarregarBase();
+  } catch (e) { msg('#eq-acao-msg', 'er', e.message); }
+};
+
 // ---------- HISTÓRICO ----------
 let H_MODO = 'posse', POSSE = [];
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
@@ -522,15 +692,15 @@ function renderPosse() {
   const pecas = POSSE.reduce((s, c) => s + c.total, 0), valor = POSSE.reduce((s, c) => s + c.valor, 0);
   const pend = POSSE.reduce((s, c) => s + c.itens.filter(i => i.status !== 'ACEITO').length, 0);
   $('#p-resumo').innerHTML = `<div class="resumo"><div><b>${POSSE.length}</b><span class="peq">colaboradores</span></div>` +
-    `<div><b>${pecas}</b><span class="peq">peças em uso</span></div><div><b>${brl(valor)}</b><span class="peq">valor ref.</span></div></div>` +
+    `<div><b>${pecas}</b><span class="peq">itens em uso</span></div><div><b>${brl(valor)}</b><span class="peq">valor ref.</span></div></div>` +
     (pend ? `<div class="msg av">${pend} entrega(s) ainda sem o "de acordo" do colaborador.</div>` : '');
   const selo = st => st === 'ACEITO' ? '<span class="chip ACEITO">✔ aceito</span>'
     : st === 'PENDENTE' ? '<span class="chip PENDENTE">aguardando aceite</span>' : `<span class="chip CONTESTADO">${esc(st.toLowerCase())}</span>`;
   $('#p-lista').innerHTML = lista.length ? lista.map(c => `<div class="pessoa">
       <div class="p-top"><div><b>${esc(c.nome)}</b>${c.status === 'Desligado' ? ' <span class="chip CONTESTADO">Desligado</span>' : ''}
         <br><span class="peq">${esc(c.funcao)}${c.setor ? ' · ' + esc(c.setor) : ''}</span></div>
-        <div class="p-tot">${c.total}<span class="peq"> peça(s)</span></div></div>
-      ${c.itens.map(i => `<div class="p-item"><div><b>${i.qtd}x</b> ${esc(i.desc)} <span class="chip">${esc(i.tam)}</span></div>
+        <div class="p-tot">${c.total}<span class="peq"> ${c.total === 1 ? 'item' : 'itens'}</span></div></div>
+      ${c.itens.map(i => `<div class="p-item"><div>${i.equip ? '💻' : `<b>${i.qtd}x</b>`} ${esc(i.desc)} <span class="chip">${esc(i.tam)}</span></div>
         <div class="peq">pegou em <b>${esc(i.desde)}</b> · ${esc(i.id)} ${selo(i.status)}</div></div>`).join('')}
       <button class="sec" data-devolver="${esc(c.cpf)}">Registrar devolução</button></div>`).join('')
     : `<p class="vazio">${POSSE.length ? 'Ninguém encontrado.' : 'Nenhum colaborador com uniforme no momento.'}</p>`;
@@ -551,7 +721,7 @@ async function carregarMovs() {
   let movs;
   try { movs = await api('movimentos', { pendentes: $('#h-pend').checked }); }
   catch (e) { $('#h-lista').innerHTML = `<div class="msg er">${esc(e.message)}</div>`; return; }
-  const rot = { ENTREGA: 'Entrega', DEVOLUCAO: 'Devolução', ENTRADA: 'Entrada estoque' };
+  const rot = { ENTREGA: 'Entrega', DEVOLUCAO: 'Devolução', ENTRADA: 'Entrada estoque', EQUIP_ENTREGA: 'Entrega equip.', EQUIP_DEVOLUCAO: 'Devolução equip.' };
   $('#h-lista').innerHTML = movs.length ? movs.map((m, i) => `<div class="mov">
       <b>${esc(m.id)}</b> <span class="chip">${rot[m.tipo] || esc(m.tipo)}</span> <span class="chip ${esc(m.status)}">${esc(m.status)}</span>
       <div>${esc(m.nome)}</div><div class="peq">${esc(m.resumo)}</div>
