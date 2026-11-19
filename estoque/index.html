@@ -65,6 +65,17 @@
   header{padding-top:calc(8px + env(safe-area-inset-top))}
   header .marca{display:flex;align-items:center;gap:10px}
   header .marca img{height:46px;width:auto}
+  .seg{display:flex;gap:6px;margin-bottom:12px}
+  .seg button{flex:1;padding:10px 6px;border:1px solid var(--az);background:#fff;color:var(--az);border-radius:10px;font-size:14px}
+  .seg button.on{background:var(--az);color:#fff;font-weight:600}
+  .pessoa{border:1px solid var(--borda);border-radius:10px;padding:12px;margin-top:10px}
+  .p-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .p-tot{font-size:20px;font-weight:700;color:var(--az);text-align:right;white-space:nowrap}
+  .p-item{padding:8px 0 2px;border-top:1px dashed #e3e7eb;margin-top:8px}
+  .p-item .chip{margin-left:0}
+  .resumo{display:flex;gap:8px;margin:10px 0 2px}
+  .resumo div{flex:1;background:#f6f8fa;border-radius:8px;padding:8px;text-align:center}
+  .resumo b{display:block;font-size:18px;color:var(--az)}
   .logo-login{display:block;max-width:200px;width:60%;margin:0 auto 14px}
   .titulo-login{text-align:center;letter-spacing:.25em;font-weight:600;color:var(--az);margin:0 0 14px}
 </style>
@@ -186,7 +197,13 @@
 
     <!-- HISTÓRICO -->
     <div id="aba-historico" class="oculto">
-      <div class="card">
+      <div class="seg"><button data-h="posse" class="on">Com cada colaborador</button><button data-h="movs">Movimentações</button></div>
+      <div class="card" id="h-posse-box">
+        <input id="p-busca" placeholder="Buscar colaborador, função ou setor…">
+        <div id="p-resumo"></div>
+        <div id="p-lista"></div>
+      </div>
+      <div class="card oculto" id="h-movs-box">
         <label style="display:flex;gap:8px;align-items:center;margin:0 0 8px;color:var(--txt)"><input type="checkbox" id="h-pend" style="width:auto" checked> Só pendentes e contestados</label>
         <div id="h-lista"></div>
       </div>
@@ -482,8 +499,54 @@ $('#btn-entrada').onclick = async () => {
 };
 
 // ---------- HISTÓRICO ----------
-$('#h-pend').onchange = carregarHistorico;
-async function carregarHistorico() {
+let H_MODO = 'posse', POSSE = [];
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+  H_MODO = b.dataset.h;
+  document.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b));
+  $('#h-posse-box').classList.toggle('oculto', H_MODO !== 'posse');
+  $('#h-movs-box').classList.toggle('oculto', H_MODO !== 'movs');
+  carregarHistorico();
+});
+function carregarHistorico() { return H_MODO === 'posse' ? carregarPosse() : carregarMovs(); }
+
+async function carregarPosse() {
+  $('#p-lista').innerHTML = '<p class="vazio">Carregando…</p>';
+  try { POSSE = await api('posse'); }
+  catch (e) { $('#p-lista').innerHTML = `<div class="msg er">${esc(e.message)}</div>`; return; }
+  renderPosse();
+}
+const brl = n => 'R$ ' + Number(n || 0).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+function renderPosse() {
+  const q = norm($('#p-busca').value);
+  const lista = POSSE.filter(c => !q || norm(c.nome + ' ' + c.funcao + ' ' + c.setor).includes(q));
+  const pecas = POSSE.reduce((s, c) => s + c.total, 0), valor = POSSE.reduce((s, c) => s + c.valor, 0);
+  const pend = POSSE.reduce((s, c) => s + c.itens.filter(i => i.status !== 'ACEITO').length, 0);
+  $('#p-resumo').innerHTML = `<div class="resumo"><div><b>${POSSE.length}</b><span class="peq">colaboradores</span></div>` +
+    `<div><b>${pecas}</b><span class="peq">peças em uso</span></div><div><b>${brl(valor)}</b><span class="peq">valor ref.</span></div></div>` +
+    (pend ? `<div class="msg av">${pend} entrega(s) ainda sem o "de acordo" do colaborador.</div>` : '');
+  const selo = st => st === 'ACEITO' ? '<span class="chip ACEITO">✔ aceito</span>'
+    : st === 'PENDENTE' ? '<span class="chip PENDENTE">aguardando aceite</span>' : `<span class="chip CONTESTADO">${esc(st.toLowerCase())}</span>`;
+  $('#p-lista').innerHTML = lista.length ? lista.map(c => `<div class="pessoa">
+      <div class="p-top"><div><b>${esc(c.nome)}</b>${c.status === 'Desligado' ? ' <span class="chip CONTESTADO">Desligado</span>' : ''}
+        <br><span class="peq">${esc(c.funcao)}${c.setor ? ' · ' + esc(c.setor) : ''}</span></div>
+        <div class="p-tot">${c.total}<span class="peq"> peça(s)</span></div></div>
+      ${c.itens.map(i => `<div class="p-item"><div><b>${i.qtd}x</b> ${esc(i.desc)} <span class="chip">${esc(i.tam)}</span></div>
+        <div class="peq">pegou em <b>${esc(i.desde)}</b> · ${esc(i.id)} ${selo(i.status)}</div></div>`).join('')}
+      <button class="sec" data-devolver="${esc(c.cpf)}">Registrar devolução</button></div>`).join('')
+    : `<p class="vazio">${POSSE.length ? 'Ninguém encontrado.' : 'Nenhum colaborador com uniforme no momento.'}</p>`;
+  $('#p-lista').querySelectorAll('[data-devolver]').forEach(b => b.onclick = async () => {
+    const c = S.base.colabs.find(x => x.cpf === b.dataset.devolver);
+    if (!c) return;
+    abrirAba('devolver');
+    S.dev = { colab: c, saldo: [], q: {} };
+    try { S.dev.saldo = await api('saldo', { cpf: c.cpf }); } catch (e) { msg('#dev-msg', 'er', e.message); }
+    renderDevolver();
+  });
+}
+$('#p-busca').oninput = renderPosse;
+
+$('#h-pend').onchange = carregarMovs;
+async function carregarMovs() {
   $('#h-lista').innerHTML = '<p class="vazio">Carregando…</p>';
   let movs;
   try { movs = await api('movimentos', { pendentes: $('#h-pend').checked }); }
