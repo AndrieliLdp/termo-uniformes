@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Termo de Uniformes · Laje de Pedra</title>
+<style>
+  :root{--az:#1f3b4d;--fundo:#f3f5f7;--txt:#1b1f23;--sub:#5f6b76;--borda:#d9dee3;--ok:#1e7a46;--okf:#e3f4ea;--er:#b42318;--erf:#fde8e7;--av:#9a6700;--avf:#fff4d6}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--txt)}
+  header{background:var(--az);color:#fff;padding:14px 16px;font-weight:600}
+  main{max-width:720px;margin:0 auto;padding:16px}
+  .intro{font-size:16px}
+  .card{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:16px;margin:12px 0}
+  .ok{background:var(--okf);color:var(--ok);border-color:#b7e1c6}
+  .er{background:var(--erf);color:var(--er);border-color:#f5c2bf}
+  .av{background:var(--avf);color:var(--av);border-color:#f0d58a}
+  .aud{font-size:13px;color:var(--sub);word-break:break-all}
+  .termo{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:18px;font-size:14px}
+  .termo h2{text-align:center;font-size:16px;margin:4px 0 14px}
+  .termo h3{font-size:14px;margin:14px 0 4px}
+  .termo p{text-align:justify;margin:6px 0}
+  .termo-id{text-align:right;font-size:12px;color:var(--sub)}
+  .termo table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0;display:block;overflow-x:auto}
+  .termo th,.termo td{border:1px solid #c9ced3;padding:6px;text-align:left;white-space:nowrap}
+  .termo th{background:#f0f2f4}
+  .termo .pend{font-size:13px}
+  label{display:block;margin:12px 0 4px;font-size:14px}
+  .check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+  .check input{width:22px;height:22px;flex:none;margin-top:1px}
+  input[type=text],textarea{width:100%;font:inherit;font-size:17px;padding:12px;border:1px solid var(--borda);border-radius:8px}
+  textarea{font-size:15px;min-height:80px}
+  button{font:inherit}
+  .pri{display:block;width:100%;background:var(--az);color:#fff;border:0;border-radius:10px;padding:14px;font-size:16px;font-weight:600;margin-top:14px}
+  .pri:disabled{opacity:.45}
+  .lnk{background:none;border:0;color:var(--sub);text-decoration:underline;margin-top:14px;font-size:14px;padding:0}
+  .msg{margin-top:10px;font-size:14px;color:var(--er)}
+  .carregando{text-align:center;color:var(--sub);padding:40px 0}
+  .oculto{display:none}
+</style>
+</head>
+<body>
+<header>Laje de Pedra · Uniformes</header>
+<main id="app"><p class="carregando">Carregando o termo…</p></main>
+
+<script>
+// Endereço do app (Google Apps Script). A página chama a API sem cookies,
+// por isso funciona mesmo com contas Google logadas no celular.
+var API = 'https://script.google.com/macros/s/AKfycbyOINt-U5n527uzA2GH4pCQgatsuD0qeLvlyWRM85urpuTLbSuRiXWTkAXlTrFrM9LA/exec';
+
+(function () {
+  var app = document.getElementById('app');
+  var token = new URLSearchParams(location.search).get('t') || '';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function chamar(params) {
+    params.t = token;
+    var url = API + '?' + new URLSearchParams(params).toString();
+    return fetch(url, { method: 'GET', credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  function sha256(s) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function (b) {
+      return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    });
+  }
+  function falhaRede(e) {
+    app.innerHTML = '<div class="card er">Não foi possível falar com o servidor. Verifique a internet e tente abrir o link de novo.</div>';
+    console.error(e);
+  }
+
+  function render(d, erroAcao) {
+    if (!d.ok && !d.termo) { app.innerHTML = '<div class="card er">' + esc(d.erro || 'Link inválido.') + '</div>'; return; }
+    var h = '';
+    if (d.estado === 'pendente') h += '<p class="intro">Olá, ' + esc(d.nome) + '! Leia o termo abaixo com atenção. Se os itens estiverem certos, confirme no final da página.</p>';
+    else if (d.estado === 'aceito') h += '<div class="card ok"><b>✔ ' + (d.recemAceito ? 'Pronto! Seu de acordo foi registrado' : 'Este termo já foi aceito') +
+      ' em ' + esc(d.quando) + '.</b><br>Não é preciso fazer mais nada. Se quiser guardar um comprovante, tire um print desta página.</div>';
+    else if (d.estado === 'contestado') h += '<div class="card av">Recebemos o seu aviso sobre este termo. O responsável pelo estoque vai corrigir e enviar um novo link.</div>';
+
+    h += '<article class="termo">' + d.termo + '</article>'; // HTML montado e escapado pelo servidor
+
+    if (d.estado === 'aceito') h += '<div class="card aud"><b>Registro do aceite eletrônico</b><br>Termo nº ' + esc(d.id) + ' · CPF ' + esc(d.cpfMasc) +
+      ' · ' + esc(d.quando) + ' (horário de Brasília)<br>Código de verificação (SHA-256): ' + esc(d.hash) + '</div>';
+
+    if (d.estado === 'pendente') {
+      var frase = d.tipo === 'ENTREGA' ? 'Li o termo, recebi os uniformes listados e concordo com as condições.'
+        : 'Li o termo e confirmo a devolução dos uniformes no estado indicado.';
+      h += '<section class="card" id="acao">' +
+        (erroAcao ? '<div class="card er" style="margin:0 0 8px">' + esc(erroAcao) + '</div>' : '') +
+        '<label class="check"><input type="checkbox" id="li"><span>' + frase + '</span></label>' +
+        '<label for="cpf">Para confirmar, digite seu CPF</label>' +
+        '<input type="text" id="cpf" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14">' +
+        '<button class="pri" id="btn-ok" type="button" disabled>De acordo</button>' +
+        '<div class="msg" id="msg" role="status"></div>' +
+        '<button class="lnk" id="btn-problema" type="button">Algum item está errado?</button>' +
+        '<div id="contestar" class="oculto"><label for="motivo">Conte o que está errado (item, tamanho, quantidade…)</label>' +
+        '<textarea id="motivo" maxlength="1000"></textarea>' +
+        '<button class="pri" id="btn-contestar" type="button" style="background:#7a2d24">Enviar para o estoque</button></div>' +
+        '</section>';
+    }
+    app.innerHTML = h;
+    if (d.estado === 'pendente') ligarAcoes();
+    if (d.estado !== 'pendente' && erroAcao === undefined) window.scrollTo(0, 0);
+  }
+
+  function ligarAcoes() {
+    var $ = function (id) { return document.getElementById(id); };
+    var li = $('li'), cpf = $('cpf'), ok = $('btn-ok'), msg = $('msg');
+    var temCrypto = !!(window.crypto && crypto.subtle && window.TextEncoder);
+    if (!temCrypto) msg.textContent = 'Este navegador não consegue confirmar o termo. Abra o link no Chrome ou Safari.';
+    function digitos() { return cpf.value.replace(/\D/g, ''); }
+    function valida() { ok.disabled = !(li.checked && digitos().length === 11 && temCrypto); }
+    li.onchange = valida;
+    cpf.oninput = function () {
+      var d = digitos().slice(0, 11);
+      cpf.value = d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      valida();
+    };
+    ok.onclick = function () {
+      ok.disabled = true; ok.textContent = 'Registrando… aguarde'; msg.textContent = '';
+      sha256(digitos() + '|' + token)
+        .then(function (h) { return chamar({ api: 'aceitar', h: h, ua: (navigator.userAgent || '').slice(0, 300) }); })
+        .then(function (d) {
+          if (d.estado === 'aceito') { render(d); window.scrollTo(0, 0); }
+          else { msg.textContent = d.erro || 'Não foi possível registrar. Tente de novo.'; ok.textContent = 'De acordo'; valida(); }
+        })
+        .catch(function (e) { msg.textContent = 'Falha de conexão. Tente de novo.'; ok.textContent = 'De acordo'; valida(); console.error(e); });
+    };
+    $('btn-problema').onclick = function () { $('contestar').classList.toggle('oculto'); };
+    $('btn-contestar').onclick = function () {
+      var motivo = $('motivo').value.trim();
+      if (motivo.length < 5) { msg.textContent = 'Descreva o que está errado.'; return; }
+      var b = $('btn-contestar'); b.disabled = true;
+      chamar({ api: 'contestar', motivo: motivo })
+        .then(function (d) { if (d.estado === 'contestado') { render(d); window.scrollTo(0, 0); } else { b.disabled = false; msg.textContent = d.erro || 'Não foi possível enviar.'; } })
+        .catch(function (e) { b.disabled = false; msg.textContent = 'Falha de conexão. Tente de novo.'; console.error(e); });
+    };
+  }
+
+  if (!/^[0-9a-f]{32,}$/i.test(token)) { app.innerHTML = '<div class="card er">Link inválido. Procure o responsável pelo estoque.</div>'; return; }
+  chamar({ api: 'termo' }).then(function (d) { render(d); }).catch(falhaRede);
+})();
+</script>
+</body>
+</html>
