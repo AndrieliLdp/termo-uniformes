@@ -108,7 +108,7 @@
 
 <!-- APP -->
 <section id="tela-app" class="oculto">
-  <header><span class="marca"><img src="../logo.png" alt="Kempinski Laje de Pedra"><b>ESTOQUE</b></span><span><span id="usuario" class="peq" style="margin-right:8px"></span><button id="btn-sair">Sair</button></span></header>
+  <header><span class="marca"><img src="../logo.png" alt="Kempinski Laje de Pedra"><b>ESTOQUE</b></span><span><span id="usuario" class="peq" style="margin-right:8px"></span><button id="btn-usuarios" class="oculto" style="margin-right:6px">Usuários</button><button id="btn-sair">Sair</button></span></header>
   <nav>
     <button data-aba="entregar" class="on">Entregar</button>
     <button data-aba="devolver">Devolver</button>
@@ -267,6 +267,28 @@
       </div>
     </div>
 
+    <!-- USUÁRIOS DO APP (só Admin) -->
+    <div id="aba-usuarios" class="oculto">
+      <div class="card" id="u-lista-box">
+        <h2>Usuários do app</h2>
+        <p class="peq">Quem pode entrar no app ESTOQUE. Cada pessoa precisa de um PIN diferente. Administradores também veem esta tela.</p>
+        <button class="sec" id="btn-u-novo">+ Novo usuário</button>
+        <div id="u-lista"></div>
+      </div>
+      <div class="card oculto" id="u-form-box">
+        <h2 id="u-form-tit">Novo usuário</h2>
+        <label>Nome</label><input id="u-nome" autocomplete="off">
+        <label id="u-pin-lbl">PIN (4 a 8 números)</label><input id="u-pin" type="password" inputmode="numeric" autocomplete="new-password" maxlength="8">
+        <div class="row2">
+          <div><label>Perfil</label><select id="u-perfil"><option value="Estoquista">Estoquista</option><option value="Admin">Administrador</option></select></div>
+          <div><label>Situação</label><select id="u-ativo"><option value="1">Ativo</option><option value="0">Inativo (sem acesso)</option></select></div>
+        </div>
+        <div id="u-msg"></div>
+        <button class="pri" id="btn-u-salvar">Salvar</button>
+        <button class="sec" id="btn-u-voltar">Voltar</button>
+      </div>
+    </div>
+
     <!-- HISTÓRICO -->
     <div id="aba-historico" class="oculto">
       <div class="seg"><button data-h="posse" class="on">Com cada colaborador</button><button data-h="movs">Movimentações</button></div>
@@ -339,6 +361,7 @@ function sair(aviso) {
 async function iniciar() {
   S.base = await api('base');
   $('#usuario').textContent = S.nome;
+  $('#btn-usuarios').classList.toggle('oculto', S.base.perfil !== 'Admin');
   $('#tela-login').classList.add('oculto'); $('#tela-app').classList.remove('oculto');
   montarListas(); renderEntregar(); renderEstoque();
 }
@@ -348,7 +371,8 @@ async function recarregarBase() { S.base = await api('base'); montarListas(); if
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => abrirAba(b.dataset.aba));
 function abrirAba(a) {
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.aba === a));
-  ['entregar','devolver','estoque','equip','historico','colab'].forEach(x => $('#aba-' + x).classList.toggle('oculto', x !== a));
+  ['entregar','devolver','estoque','equip','historico','colab','usuarios'].forEach(x => $('#aba-' + x).classList.toggle('oculto', x !== a));
+  if (a === 'usuarios') carregarUsuarios();
   if (a === 'historico') carregarHistorico();
   if (a === 'equip') voltarEquip();
   if (a === 'estoque') renderEstoque();
@@ -666,6 +690,45 @@ $('#btn-eq-confirmar').onclick = async () => {
     $('#eq-res').querySelector('#btn-nova').textContent = 'Voltar aos equipamentos';
     recarregarBase();
   } catch (e) { msg('#eq-acao-msg', 'er', e.message); }
+};
+
+// ---------- USUÁRIOS DO APP ----------
+let USUARIOS = [], U_EDIT = null;
+$('#btn-usuarios').onclick = () => abrirAba('usuarios');
+async function carregarUsuarios() {
+  $('#u-form-box').classList.add('oculto'); $('#u-lista-box').classList.remove('oculto');
+  $('#u-lista').innerHTML = '<p class="vazio">Carregando…</p>';
+  try { USUARIOS = await api('usuarios'); }
+  catch (e) { $('#u-lista').innerHTML = `<div class="msg er">${esc(e.message)}</div>`; return; }
+  $('#u-lista').innerHTML = USUARIOS.map((u, i) => `<div class="pessoa"><div class="p-top">
+      <div><b>${esc(u.nome)}</b>${u.eu ? ' <span class="peq">(você)</span>' : ''}<br>
+        <span class="chip ${u.perfil === 'Admin' ? 'ACEITO' : ''}">${u.perfil === 'Admin' ? 'Administrador' : 'Estoquista'}</span>
+        ${u.ativo ? '' : '<span class="chip CONTESTADO">Inativo</span>'}</div>
+      <button class="sec" style="width:auto;margin:0;padding:8px 14px" data-u="${i}">Editar</button></div></div>`).join('')
+    || '<p class="vazio">Nenhum usuário.</p>';
+  $('#u-lista').querySelectorAll('[data-u]').forEach(b => b.onclick = () => abrirFormUsuario(USUARIOS[b.dataset.u]));
+}
+function abrirFormUsuario(u) {
+  U_EDIT = u || null;
+  $('#u-form-tit').textContent = u ? 'Editar usuário' : 'Novo usuário';
+  $('#u-nome').value = u ? u.nome : '';
+  $('#u-pin').value = '';
+  $('#u-pin').placeholder = u ? 'Deixe em branco para manter o PIN atual' : '';
+  $('#u-pin-lbl').textContent = u ? 'Novo PIN (opcional)' : 'PIN (4 a 8 números)';
+  $('#u-perfil').value = u ? u.perfil : 'Estoquista';
+  $('#u-ativo').value = !u || u.ativo ? '1' : '0';
+  msg('#u-msg');
+  $('#u-lista-box').classList.add('oculto'); $('#u-form-box').classList.remove('oculto'); window.scrollTo(0, 0);
+}
+$('#btn-u-novo').onclick = () => abrirFormUsuario(null);
+$('#btn-u-voltar').onclick = carregarUsuarios;
+$('#u-pin').oninput = e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8); };
+$('#btn-u-salvar').onclick = async () => {
+  msg('#u-msg');
+  const d = { original: U_EDIT ? U_EDIT.nome : '', nome: $('#u-nome').value, pin: $('#u-pin').value,
+              perfil: $('#u-perfil').value, ativo: $('#u-ativo').value === '1' };
+  try { await api('usuario_salvar', d); await carregarUsuarios(); }
+  catch (e) { msg('#u-msg', 'er', e.message); }
 };
 
 // ---------- HISTÓRICO ----------
