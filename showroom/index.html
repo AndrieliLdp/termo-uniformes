@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Showroom">
+<title>Showroom · Kempinski Laje de Pedra</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root{--az:#010f2a;--bege:#a49483;--fundo:#f3f5f7;--card:#fff;--txt:#1b1f23;--sub:#5f6b76;--borda:#d9dee3;
+        --ok:#1e7a46;--okf:#e3f4ea;--av:#9a6700;--avf:#fff4d6;--er:#b42318;--erf:#fde8e7;--ro:#5b3f8c;--rof:#efe9f8}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--txt)}
+  header{background:#fff;color:var(--az);padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--bege);gap:8px}
+  header .marca{display:flex;align-items:center;gap:10px} header .marca img{height:46px;width:auto}
+  header b{font-size:15px;letter-spacing:.18em;font-weight:600}
+  header button{background:none;border:1px solid var(--az);color:var(--az);border-radius:8px;padding:4px 10px;font-size:13px}
+  nav{display:flex;background:#fff;border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:4}
+  nav button{flex:1;border:0;background:none;padding:12px 4px;font-size:14px;color:var(--sub);border-bottom:3px solid transparent;position:relative}
+  nav button.on{color:var(--az);border-bottom-color:var(--az);font-weight:600}
+  nav .badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:99px;background:var(--er);color:#fff;font-size:11px;line-height:18px;margin-left:4px}
+  main{max-width:640px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:14px;margin-bottom:12px}
+  h2{font-size:16px;margin:0 0 10px}
+  label{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
+  label .obr{color:var(--er)}
+  input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid var(--borda);border-radius:8px;background:#fff;color:var(--txt)}
+  textarea{min-height:70px}
+  button.pri{display:block;width:100%;background:var(--az);color:#fff;border:0;border-radius:10px;padding:13px;font-size:15px;font-weight:600;margin-top:12px}
+  button.sec{display:block;width:100%;background:#fff;color:var(--az);border:1px solid var(--az);border-radius:10px;padding:11px;font-size:14px;margin-top:8px}
+  button:disabled{opacity:.5}
+  .peq{font-size:13px;color:var(--sub)}
+  .msg{padding:10px 12px;border-radius:8px;margin:10px 0;font-size:14px;white-space:pre-line}
+  .msg.er{background:var(--erf);color:var(--er)} .msg.ok{background:var(--okf);color:var(--ok)} .msg.av{background:var(--avf);color:var(--av)}
+  .chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:#eef1f4;color:var(--sub)}
+  .chip.pend{background:var(--avf);color:var(--av)} .chip.ok{background:var(--okf);color:var(--ok)} .chip.er{background:var(--erf);color:var(--er)} .chip.ds{background:var(--rof);color:var(--ro)}
+  .vis{border:1px solid var(--borda);border-radius:10px;padding:12px;margin-top:10px;background:#fff}
+  .vis.nova{border-color:var(--av);box-shadow:0 0 0 2px var(--avf)}
+  .vis .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .vis .nm{font-weight:600;font-size:15px}
+  .vis .det{font-size:13px;color:var(--sub);margin-top:4px}
+  .vis .chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .vis button.abrir{margin-top:10px;width:100%;padding:10px;border-radius:8px;border:0;background:var(--az);color:#fff;font-weight:600;font-size:14px}
+  .classes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .classes button{padding:12px 6px;border:1px solid var(--borda);background:#fff;border-radius:10px;font-size:14px;color:var(--txt)}
+  .classes button.ds{border-color:var(--ro);color:var(--ro)}
+  .classes button.on{background:var(--az);border-color:var(--az);color:#fff;font-weight:600}
+  .classes button.ds.on{background:var(--ro);border-color:var(--ro)}
+  .seg{display:flex;gap:6px} .seg button{flex:1;padding:10px;border:1px solid var(--az);background:#fff;color:var(--az);border-radius:10px}
+  .seg button.on{background:var(--az);color:#fff;font-weight:600}
+  .row2{display:grid;grid-template-columns:110px 1fr;gap:8px}
+  .vazio{color:var(--sub);font-size:14px;text-align:center;padding:14px}
+  .resumo{display:flex;gap:8px;margin:2px 0 4px} .resumo div{flex:1;background:#f6f8fa;border-radius:8px;padding:8px;text-align:center;font-size:12px;color:var(--sub)}
+  .resumo b{display:block;font-size:20px;color:var(--az)}
+  .aviso-notif{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .aviso-notif button{white-space:nowrap;width:auto;margin:0;padding:8px 12px}
+  .usr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #eef1f4;gap:8px}
+  .usr:last-child{border:0} .usr.inativo{opacity:.5}
+  .usr button{background:none;border:1px solid var(--borda);border-radius:8px;padding:6px 10px;color:var(--az);font-size:13px}
+  #carregando{position:fixed;inset:0;background:#ffffffaa;display:none;align-items:center;justify-content:center;z-index:9;font-weight:600;color:var(--az)}
+  .oculto{display:none!important}
+  .logo-login{display:block;max-width:200px;width:60%;margin:0 auto 14px}
+  .titulo-login{text-align:center;letter-spacing:.25em;font-weight:600;color:var(--az);margin:0 0 14px}
+  #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--az);color:#fff;padding:12px 16px;border-radius:10px;font-size:14px;z-index:10;max-width:92%;box-shadow:0 4px 14px #0003}
+</style>
+</head>
+<body>
+<div id="carregando">Aguarde…</div>
+<div id="toast" class="oculto"></div>
+
+<!-- LOGIN -->
+<section id="tela-login" class="oculto">
+  <main style="padding-top:12vh">
+    <div class="card">
+      <img class="logo-login" src="../logo.png" alt="Kempinski Laje de Pedra">
+      <h2 class="titulo-login">SHOWROOM</h2>
+      <p class="peq">Digite seu PIN para entrar.</p>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN">
+      <div id="login-msg"></div>
+      <button class="pri" id="btn-login">Entrar</button>
+    </div>
+  </main>
+</section>
+
+<!-- APP -->
+<section id="tela-app" class="oculto">
+  <header>
+    <span class="marca"><img src="../logo.png" alt="Kempinski Laje de Pedra"><b>SHOWROOM</b></span>
+    <span><span id="usuario" class="peq" style="margin-right:6px"></span><button id="btn-usuarios" class="oculto" style="margin-right:4px">Usuários</button><button id="btn-sair">Sair</button></span>
+  </header>
+  <nav id="nav"></nav>
+  <main>
+    <div class="card oculto" id="card-notif">
+      <div class="aviso-notif"><span class="peq">Ative os avisos para saber na hora quando uma concierge te passar um cliente.</span>
+      <button class="sec" id="btn-notif">Ativar avisos</button></div>
+    </div>
+
+    <!-- CONCIERGE: NOVA VISITA -->
+    <div id="aba-nova" class="oculto">
+      <div class="card">
+        <h2>Nova visita</h2>
+        <p class="peq" id="nv-quando"></p>
+        <label>Nome(s) <span class="obr">*</span></label>
+        <input id="nv-nomes" autocomplete="off" placeholder="Ex.: João e Maria Silva">
+        <label>Especialista <span class="obr">*</span></label>
+        <select id="nv-esp"></select>
+        <label>Observação</label>
+        <textarea id="nv-obs" placeholder="Opcional"></textarea>
+        <div id="nv-msg"></div>
+        <button class="pri" id="btn-nv">Registrar e avisar especialista</button>
+      </div>
+    </div>
+
+    <!-- HOJE -->
+    <div id="aba-hoje" class="oculto">
+      <div class="card">
+        <h2>Visitas do dia</h2>
+        <input type="date" id="hj-dia">
+        <div class="resumo" id="hj-resumo" style="margin-top:10px"></div>
+        <div id="hj-lista"></div>
+      </div>
+    </div>
+
+    <!-- ESPECIALISTA: MINHAS -->
+    <div id="aba-minhas" class="oculto">
+      <div id="mn-lista"></div>
+    </div>
+
+    <!-- CLASSIFICAR -->
+    <div id="aba-class" class="oculto">
+      <div class="card">
+        <h2 id="cl-titulo">Feedback</h2>
+        <div class="det peq" id="cl-info"></div>
+        <label>Classificação <span class="obr">*</span></label>
+        <div class="classes" id="cl-classes"></div>
+        <p class="peq" id="cl-dica" style="margin:8px 0 0"></p>
+        <label>Feedback do atendimento <span class="obr">*</span></label>
+        <textarea id="cl-feedback" placeholder="Como foi a visita, perfil do cliente, próximos passos…"></textarea>
+      </div>
+      <div class="card oculto" id="cl-ds">
+        <h2>Cadastro no DeepSales</h2>
+        <p class="peq" style="margin-top:-4px">O lead entra no funil <b>Agendamento</b>, canal SHOWROOM, com você como responsável. Se o cliente já existir (mesmo telefone, e-mail ou CPF), o feedback entra como nota no lead dele.</p>
+        <label>Nome do cliente <span class="obr">*</span></label>
+        <input id="cl-nome" autocomplete="off">
+        <label>Telefone <span class="obr">*</span></label>
+        <div class="row2">
+          <select id="cl-ddi">
+            <option value="55">🇧🇷 +55</option><option value="54">🇦🇷 +54</option><option value="598">🇺🇾 +598</option>
+            <option value="595">🇵🇾 +595</option><option value="56">🇨🇱 +56</option><option value="1">🇺🇸 +1</option>
+            <option value="351">🇵🇹 +351</option><option value="34">🇪🇸 +34</option><option value="39">🇮🇹 +39</option><option value="49">🇩🇪 +49</option>
+          </select>
+          <input id="cl-tel" inputmode="tel" placeholder="(54) 99999-9999">
+        </div>
+        <label>E-mail</label>
+        <input id="cl-email" type="email" autocomplete="off">
+        <label>Pessoa <span class="obr">*</span></label>
+        <div class="seg" id="cl-pessoa"><button data-v="Física" class="on">Física</button><button data-v="Jurídica">Jurídica</button></div>
+        <label id="cl-doc-lbl">CPF</label>
+        <input id="cl-doc" inputmode="numeric" autocomplete="off">
+        <label>Data de nascimento</label>
+        <input id="cl-nasc" type="date">
+      </div>
+      <div id="cl-msg"></div>
+      <button class="pri" id="btn-cl">Salvar</button>
+      <button class="sec" id="btn-cl-voltar">Voltar</button>
+    </div>
+
+    <!-- USUÁRIOS (ADMIN) -->
+    <div id="aba-usuarios" class="oculto">
+      <div class="card" id="us-form-card">
+        <h2 id="us-form-tit">Novo usuário</h2>
+        <label>Nome</label><input id="us-nome" autocomplete="off">
+        <label>Perfil</label>
+        <select id="us-perfil"><option>Concierge</option><option>Especialista</option><option>Admin</option></select>
+        <label>ID do usuário no DeepSales <span class="peq">(obrigatório para Especialista)</span></label>
+        <input id="us-ds" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+        <label id="us-pin-lbl">PIN (4 a 8 números)</label><input id="us-pin" inputmode="numeric" autocomplete="off">
+        <label style="display:flex;gap:8px;align-items:center;color:var(--txt)"><input type="checkbox" id="us-ativo" style="width:auto" checked> Ativo</label>
+        <div id="us-msg"></div>
+        <button class="pri" id="btn-us-salvar">Salvar</button>
+        <button class="sec oculto" id="btn-us-novo">Cancelar edição</button>
+      </div>
+      <div class="card"><h2>Usuários</h2><div id="us-lista"></div></div>
+      <button class="sec" id="btn-us-voltar">Voltar</button>
+    </div>
+  </main>
+</section>
+
+<script>
+// URL do app da Web (Apps Script) — trocar depois da implantação
+const API = 'https://script.google.com/macros/s/AKfycbyXnmcuB3wcBSQ6_r20-zsdNDotad5jHWIrLaxwVVC9CbKBNhuZZzZOHys22mYTXa8JVw/exec';
+const POLL_MS = 30000;
+
+const S = { sessao: null, nome: '', base: null, aba: null, visitas: [], atual: null, cl: null, pessoa: 'Física',
+            vistos: new Set(), primeiroPoll: true, timer: null, usEdit: null };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const limpa = e => String((e && e.message) || e).replace(/^(Exception|Error|Erro|ScriptError):\s*/i, '');
+const msg = (el, tipo, t) => { $(el).innerHTML = t ? `<div class="msg ${tipo}">${esc(t)}</div>` : ''; };
+const loading = on => $('#carregando').style.display = on ? 'flex' : 'none';
+const guardar = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const lerLS = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const hojeISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.remove('oculto'); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.add('oculto'), 4000); }
+
+async function gs(fn, ...args) {
+  const corpo = fn === 'login' ? { fn, pin: args[0] } : { fn, sessao: args[0], acao: args[1], dados: args[2] };
+  let r;
+  try {
+    r = await fetch(API, { method: 'POST', body: JSON.stringify(corpo), headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                           credentials: 'omit', redirect: 'follow', cache: 'no-store' });
+  } catch (e) { throw new Error('Sem conexão com o servidor. Verifique a internet.'); }
+  const d = await r.json();
+  if (!d.ok) throw new Error(d.erro || 'Erro no servidor.');
+  return d.data;
+}
+async function api(acao, dados, silencioso) {
+  if (!silencioso) loading(true);
+  try { return await gs('api', S.sessao, acao, dados || {}); }
+  catch (e) {
+    const m = limpa(e);
+    if (m.includes('SESSAO_EXPIRADA')) { sair('Sua sessão expirou. Entre de novo.'); throw new Error('Sessão expirada.'); }
+    throw new Error(m);
+  } finally { if (!silencioso) loading(false); }
+}
+
+// ---------- login ----------
+async function entrar() {
+  const pin = $('#pin').value.trim();
+  if (!pin) return;
+  loading(true);
+  try {
+    const r = await gs('login', pin);
+    S.sessao = r.sessao; S.nome = r.nome; guardar('show_sessao', r);
+    $('#pin').value = ''; msg('#login-msg');
+    await iniciar();
+  } catch (e) { msg('#login-msg', 'er', limpa(e)); }
+  finally { loading(false); }
+}
+function sair(aviso) {
+  S.sessao = null; guardar('show_sessao', null); clearInterval(S.timer);
+  $('#tela-app').classList.add('oculto'); $('#tela-login').classList.remove('oculto');
+  msg('#login-msg', aviso ? 'av' : '', aviso || '');
+}
+
+async function iniciar() {
+  S.base = await api('base');
+  const p = S.base.perfil;
+  $('#usuario').textContent = S.nome.split(' ')[0];
+  $('#btn-usuarios').classList.toggle('oculto', p !== 'Admin');
+  const abas = [];
+  if (p === 'Concierge' || p === 'Admin') abas.push(['nova', 'Nova visita']);
+  if (p === 'Especialista' || p === 'Admin') abas.push(['minhas', p === 'Admin' ? 'Feedbacks' : 'Minhas visitas']);
+  abas.push(['hoje', 'Hoje']);
+  $('#nav').innerHTML = abas.map(a => `<button data-aba="${a[0]}">${a[1]}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => mostrar(b.dataset.aba));
+  $('#nv-esp').innerHTML = '<option value="">Escolha…</option>' + S.base.especialistas.map(n => `<option>${esc(n)}</option>`).join('');
+  $('#tela-login').classList.add('oculto'); $('#tela-app').classList.remove('oculto');
+  mostrar(abas[0][0]);
+  if (p === 'Especialista' || p === 'Admin') {
+    atualizarCardNotif();
+    S.vistos = new Set(lerLS('show_vistos_' + S.nome) || []);
+    S.primeiroPoll = true;
+    poll(); clearInterval(S.timer); S.timer = setInterval(poll, POLL_MS);
+  }
+}
+
+function mostrar(aba) {
+  S.aba = aba;
+  ['nova', 'hoje', 'minhas', 'class', 'usuarios'].forEach(a => $('#aba-' + a).classList.toggle('oculto', a !== aba));
+  $('#nav').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === aba));
+  window.scrollTo(0, 0);
+  if (aba === 'nova') { $('#nv-quando').textContent = 'Data e hora entram automaticamente · Concierge: ' + S.nome; }
+  if (aba === 'hoje') { if (!$('#hj-dia').value) $('#hj-dia').value = hojeISO(); carregarHoje(); }
+  if (aba === 'minhas') carregarMinhas();
+  if (aba === 'usuarios') carregarUsuarios();
+}
+
+// ---------- concierge ----------
+async function registrarVisita() {
+  const d = { nomes: $('#nv-nomes').value, especialista: $('#nv-esp').value, obs: $('#nv-obs').value };
+  if (d.nomes.trim().length < 2) return msg('#nv-msg', 'er', 'Informe o(s) nome(s).');
+  if (!d.especialista) return msg('#nv-msg', 'er', 'Escolha o especialista.');
+  $('#btn-nv').disabled = true;
+  try {
+    const r = await api('nova_visita', d);
+    $('#nv-nomes').value = ''; $('#nv-obs').value = ''; $('#nv-esp').value = '';
+    msg('#nv-msg', 'ok', `Visita ${r.id} registrada. ${d.especialista.split(' ')[0]} foi avisado(a) no app.`);
+  } catch (e) { msg('#nv-msg', 'er', limpa(e)); }
+  finally { $('#btn-nv').disabled = false; }
+}
+
+function chips(v) {
+  const c = [];
+  if (v.status === 'Aguardando feedback') c.push('<span class="chip pend">Aguardando feedback</span>');
+  else c.push(`<span class="chip ok">${esc(v.classificacao)}</span>`);
+  if (v.ds === 'Criado') c.push('<span class="chip ds">DeepSales: criado</span>');
+  else if (v.ds === 'Nota em lead existente') c.push('<span class="chip ds">DeepSales: nota no lead</span>');
+  else if (v.ds === 'Erro') c.push('<span class="chip er">DeepSales: erro</span>');
+  return c.join('');
+}
+function cardVisita(v, comBotao) {
+  const pend = v.status === 'Aguardando feedback';
+  let bt = '';
+  if (comBotao && pend) bt = `<button class="abrir" data-id="${esc(v.id)}">Dar feedback</button>`;
+  else if (comBotao && v.ds === 'Erro') bt = `<div class="msg er">${esc(v.dsDetalhe)}</div><button class="abrir" data-re="${esc(v.id)}">Tentar enviar ao DeepSales de novo</button><button class="sec" data-id="${esc(v.id)}">Corrigir dados</button>`;
+  return `<div class="vis ${pend && comBotao ? 'nova' : ''}">
+    <div class="top"><div class="nm">${esc(v.nomes)}</div><span class="peq">${esc(v.quando.slice(-5))}</span></div>
+    <div class="det">${esc(v.quando.slice(0, 10))} · Especialista: ${esc(v.especialista)} · Concierge: ${esc(v.concierge)}</div>
+    ${v.obs ? `<div class="det">Obs.: ${esc(v.obs)}</div>` : ''}
+    ${v.feedback ? `<div class="det">Feedback: ${esc(v.feedback)}</div>` : ''}
+    <div class="chips">${chips(v)}</div>${bt}</div>`;
+}
+
+async function carregarHoje() {
+  try {
+    const vs = await api('visitas_dia', { dia: $('#hj-dia').value });
+    const pend = vs.filter(v => v.status === 'Aguardando feedback').length;
+    const ds = vs.filter(v => v.ds === 'Criado' || v.ds === 'Nota em lead existente').length;
+    $('#hj-resumo').innerHTML = `<div><b>${vs.length}</b>visitas</div><div><b>${pend}</b>aguardando</div><div><b>${ds}</b>no DeepSales</div>`;
+    $('#hj-lista').innerHTML = vs.length ? vs.map(v => cardVisita(v, false)).join('') : '<div class="vazio">Nenhuma visita neste dia.</div>';
+  } catch (e) { $('#hj-lista').innerHTML = `<div class="msg er">${esc(limpa(e))}</div>`; }
+}
+
+// ---------- especialista ----------
+async function carregarMinhas() {
+  try {
+    S.visitas = await api('minhas');
+    const pend = S.visitas.filter(v => v.status === 'Aguardando feedback');
+    const resto = S.visitas.filter(v => v.status !== 'Aguardando feedback');
+    $('#mn-lista').innerHTML =
+      `<div class="card"><h2>Aguardando seu feedback (${pend.length})</h2>${pend.length ? pend.map(v => cardVisita(v, true)).join('') : '<div class="vazio">Nada pendente. 👍</div>'}</div>` +
+      `<div class="card"><h2>Últimos 7 dias</h2>${resto.length ? resto.map(v => cardVisita(v, true)).join('') : '<div class="vazio">Nenhum feedback recente.</div>'}</div>`;
+    $('#mn-lista').querySelectorAll('[data-id]').forEach(b => b.onclick = () => abrirClass(b.dataset.id));
+    $('#mn-lista').querySelectorAll('[data-re]').forEach(b => b.onclick = () => reenviar(b.dataset.re));
+    badge(pend.length);
+  } catch (e) { $('#mn-lista').innerHTML = `<div class="msg er">${esc(limpa(e))}</div>`; }
+}
+
+function abrirClass(id) {
+  const v = S.visitas.find(x => x.id === id);
+  if (!v) return;
+  S.atual = v; S.cl = v.classificacao || null;
+  $('#cl-titulo').textContent = v.nomes;
+  $('#cl-info').innerHTML = `${esc(v.quando)} · Concierge: ${esc(v.concierge)}${v.obs ? '<br>Obs.: ' + esc(v.obs) : ''}`;
+  $('#cl-classes').innerHTML = S.base.classificacoes.map(c =>
+    `<button data-c="${esc(c)}" class="${S.base.classDS.includes(c) ? 'ds' : ''}">${esc(c)}</button>`).join('');
+  $('#cl-classes').querySelectorAll('button').forEach(b => b.onclick = () => escolherClass(b.dataset.c));
+  $('#cl-feedback').value = v.feedback || '';
+  $('#cl-nome').value = v.nomeCrm || v.nomes;
+  const tel = String(v.telefone || ''); const m = tel.match(/^\+(\d+)\s+(\d+)$/);
+  $('#cl-ddi').value = m ? m[1] : '55'; $('#cl-tel').value = m ? m[2] : tel;
+  $('#cl-email').value = v.email || ''; $('#cl-doc').value = v.documento || ''; $('#cl-nasc').value = v.nascimento || '';
+  setPessoa(v.pessoa || 'Física');
+  escolherClass(S.cl);
+  msg('#cl-msg');
+  mostrar('class');
+}
+function escolherClass(c) {
+  S.cl = c;
+  $('#cl-classes').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.c === c));
+  const ds = c && S.base.classDS.includes(c);
+  $('#cl-ds').classList.toggle('oculto', !ds);
+  $('#cl-dica').textContent = !c ? 'Em roxo: classificações que cadastram o cliente no DeepSales.' :
+    ds ? 'Esta classificação cadastra o cliente no DeepSales — preencha os dados abaixo.' : 'Esta classificação fica só na planilha.';
+  $('#btn-cl').textContent = ds ? 'Salvar e cadastrar no DeepSales' : 'Salvar feedback';
+}
+function setPessoa(p) {
+  S.pessoa = p;
+  $('#cl-pessoa').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === p));
+  $('#cl-doc-lbl').textContent = p === 'Jurídica' ? 'CNPJ' : 'CPF';
+}
+async function salvarClass() {
+  const v = S.atual; if (!v) return;
+  if (!S.cl) return msg('#cl-msg', 'er', 'Escolha a classificação.');
+  if ($('#cl-feedback').value.trim().length < 3) return msg('#cl-msg', 'er', 'Escreva o feedback do atendimento.');
+  const d = { id: v.id, classificacao: S.cl, feedback: $('#cl-feedback').value };
+  if (S.base.classDS.includes(S.cl)) {
+    d.cliente = { nome: $('#cl-nome').value, ddi: $('#cl-ddi').value, telefone: $('#cl-tel').value, email: $('#cl-email').value,
+                  pessoa: S.pessoa, documento: $('#cl-doc').value, nascimento: $('#cl-nasc').value };
+    if (d.cliente.telefone.replace(/\D/g, '').length < 8) return msg('#cl-msg', 'er', 'Telefone é obrigatório no DeepSales.');
+  }
+  $('#btn-cl').disabled = true;
+  try {
+    const r = await api('classificar', d);
+    if (r.ds === 'Erro') { msg('#cl-msg', 'er', 'Feedback salvo na planilha, mas o DeepSales recusou:\n' + r.detalhe + '\nCorrija os dados e salve de novo, ou tente mais tarde.'); await recarregarAtual(v.id); return; }
+    toast(r.ds === 'Criado' ? 'Feedback salvo e lead criado no DeepSales ✔' : r.ds === 'Nota em lead existente' ? 'Feedback salvo. Cliente já existia no DeepSales: virou nota no lead ✔' : 'Feedback salvo ✔');
+    mostrar('minhas');
+  } catch (e) { msg('#cl-msg', 'er', limpa(e)); }
+  finally { $('#btn-cl').disabled = false; }
+}
+async function recarregarAtual(id) { try { S.visitas = await api('minhas', {}, true); S.atual = S.visitas.find(x => x.id === id) || S.atual; } catch (e) {} }
+async function reenviar(id) {
+  try {
+    const r = await api('reenviar', { id });
+    toast(r.ok ? 'Enviado ao DeepSales ✔' : 'DeepSales recusou de novo: ' + r.detalhe);
+  } catch (e) { toast(limpa(e)); }
+  carregarMinhas();
+}
+
+// ---------- avisos ----------
+function badge(n) {
+  const b = $('#nav').querySelector('[data-aba="minhas"]');
+  if (b) b.innerHTML = (S.base.perfil === 'Admin' ? 'Feedbacks' : 'Minhas visitas') + (n ? ` <span class="badge">${n}</span>` : '');
+  try { n ? navigator.setAppBadge && navigator.setAppBadge(n) : navigator.clearAppBadge && navigator.clearAppBadge(); } catch (e) {}
+}
+function atualizarCardNotif() {
+  const pode = 'Notification' in window;
+  $('#card-notif').classList.toggle('oculto', !pode || Notification.permission === 'granted');
+}
+async function pedirNotif() {
+  try { const p = await Notification.requestPermission(); if (p !== 'granted') toast('Avisos bloqueados. Libere nas configurações do navegador.'); } catch (e) {}
+  atualizarCardNotif();
+}
+function bip() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, .25].forEach(t => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(.2, ctx.currentTime + t); g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + t + .2); o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + .2); });
+  } catch (e) {}
+}
+async function notificar(v) {
+  const titulo = 'Novo cliente no Showroom';
+  const corpo = `${v.nomes} — passado por ${String(v.concierge).split(' ')[0]}. Toque para dar o feedback.`;
+  try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
+  bip(); toast(corpo);
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (reg) reg.showNotification(titulo, { body: corpo, icon: 'icon-192.png', badge: 'icon-192.png', tag: v.id, renotify: true, data: { id: v.id } });
+      else new Notification(titulo, { body: corpo, icon: 'icon-192.png', tag: v.id });
+    } catch (e) {}
+  }
+}
+async function poll() {
+  if (!S.sessao) return;
+  try {
+    const ps = await api('pendentes', {}, true);
+    const novos = ps.filter(p => !S.vistos.has(p.id));
+    if (!S.primeiroPoll || novos.length) novos.forEach(notificar);
+    S.primeiroPoll = false;
+    ps.forEach(p => S.vistos.add(p.id));
+    guardar('show_vistos_' + S.nome, [...S.vistos].slice(-300));
+    badge(ps.length);
+    if (novos.length && S.aba === 'minhas') carregarMinhas();
+  } catch (e) { /* tenta de novo no próximo ciclo */ }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.sessao && S.base && S.base.perfil !== 'Concierge') poll(); });
+
+// ---------- usuários (admin) ----------
+async function carregarUsuarios() {
+  try {
+    const us = await api('usuarios');
+    S.usuarios = us;
+    $('#us-lista').innerHTML = us.map((u, i) => `<div class="usr ${u.ativo ? '' : 'inativo'}">
+      <div><b>${esc(u.nome)}</b><div class="peq">${esc(u.perfil)}${u.temPin ? '' : ' · <span style="color:var(--er)">sem PIN</span>'}${u.ativo ? '' : ' · inativo'}</div></div>
+      <button data-i="${i}">Editar</button></div>`).join('');
+    $('#us-lista').querySelectorAll('button').forEach(b => b.onclick = () => editarUsuario(S.usuarios[b.dataset.i]));
+  } catch (e) { $('#us-lista').innerHTML = `<div class="msg er">${esc(limpa(e))}</div>`; }
+}
+function editarUsuario(u) {
+  S.usEdit = u || null;
+  $('#us-form-tit').textContent = u ? 'Editar ' + u.nome : 'Novo usuário';
+  $('#us-nome').value = u ? u.nome : ''; $('#us-perfil').value = u ? u.perfil : 'Concierge';
+  $('#us-ds').value = u ? u.dsId : ''; $('#us-pin').value = ''; $('#us-ativo').checked = u ? u.ativo : true;
+  $('#us-pin-lbl').textContent = u ? 'Novo PIN (deixe vazio para manter)' : 'PIN (4 a 8 números)';
+  $('#btn-us-novo').classList.toggle('oculto', !u); msg('#us-msg');
+  window.scrollTo(0, 0);
+}
+async function salvarUsuario() {
+  const d = { original: S.usEdit ? S.usEdit.nome : '', nome: $('#us-nome').value, perfil: $('#us-perfil').value,
+              dsId: $('#us-ds').value, pin: $('#us-pin').value, ativo: $('#us-ativo').checked };
+  try { await api('usuario_salvar', d); editarUsuario(null); msg('#us-msg', 'ok', 'Salvo.'); carregarUsuarios(); S.base = await api('base', {}, true);
+        $('#nv-esp').innerHTML = '<option value="">Escolha…</option>' + S.base.especialistas.map(n => `<option>${esc(n)}</option>`).join(''); }
+  catch (e) { msg('#us-msg', 'er', limpa(e)); }
+}
+
+// ---------- eventos ----------
+$('#btn-login').onclick = entrar;
+$('#pin').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+$('#btn-sair').onclick = () => sair();
+$('#btn-nv').onclick = registrarVisita;
+$('#hj-dia').onchange = carregarHoje;
+$('#btn-cl').onclick = salvarClass;
+$('#btn-cl-voltar').onclick = () => mostrar('minhas');
+$('#cl-pessoa').querySelectorAll('button').forEach(b => b.onclick = () => setPessoa(b.dataset.v));
+$('#btn-notif').onclick = pedirNotif;
+$('#btn-usuarios').onclick = () => { editarUsuario(null); mostrar('usuarios'); };
+$('#btn-us-salvar').onclick = salvarUsuario;
+$('#btn-us-novo').onclick = () => editarUsuario(null);
+$('#btn-us-voltar').onclick = () => mostrar($('#nav').querySelector('button').dataset.aba);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.abrir && S.sessao) mostrar('minhas'); });
+}
+(async () => {
+  const s = lerLS('show_sessao');
+  if (s && s.sessao) { S.sessao = s.sessao; S.nome = s.nome; loading(true); try { await iniciar(); return; } catch (e) {} finally { loading(false); } }
+  $('#tela-login').classList.remove('oculto');
+})();
+</script>
+</body>
+</html>
